@@ -616,6 +616,7 @@ const workoutPlan: WorkoutDay[] = [
         notes: "Calves focus - full range of motion",
         videoUrl: "https://www.youtube.com/embed/gwLzBJYoWlI",
         muscleIllustration: "/images/muscle-diagrams/calf-raises-muscles.png",
+
       },
     ],
   },
