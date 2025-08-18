@@ -24,6 +24,9 @@ html {
 }
         `}</style>
         <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+        <meta property="og:image" content="ogImage.jpg" />
+        <meta property="og:image:alt" content="sirish titaju showcasing his workout schdeule" />
+        <meta property="og:description" content="sirish titaju showcasing his workout schdeule" />
       </head>
       <body>{children}</body>
     </html>
