@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -625,6 +625,76 @@ function WorkoutScheduler() {
   const [completedExercises, setCompletedExercises] = useState<Set<string>>(new Set())
   const [activeDay, setActiveDay] = useState("Warmup")
   const [hiddenVideos, setHiddenVideos] = useState<Set<string>>(new Set())
+  const tabsScrollRef = useRef<HTMLDivElement>(null)
+
+  const getMuscleGroupColors = (muscle: string) => {
+    switch (muscle) {
+      case "Chest":
+        return {
+          card: "bg-blue-50",
+          shadow: "shadow-[20px_20px_60px_#bfdbfe,-20px_-20px_60px_#ffffff]",
+          icon: "text-blue-500",
+          gradient: "from-blue-400 via-blue-500 to-blue-600",
+          subtitle: "Build upper body strength"
+        }
+      case "Triceps":
+        return {
+          card: "bg-indigo-50",
+          shadow: "shadow-[20px_20px_60px_#c7d2fe,-20px_-20px_60px_#ffffff]",
+          icon: "text-indigo-500",
+          gradient: "from-indigo-400 via-indigo-500 to-purple-600",
+          subtitle: "Sculpt your arms"
+        }
+      case "Back":
+        return {
+          card: "bg-green-50",
+          shadow: "shadow-[20px_20px_60px_#bbf7d0,-20px_-20px_60px_#ffffff]",
+          icon: "text-green-500",
+          gradient: "from-green-400 via-green-500 to-emerald-600",
+          subtitle: "Strengthen your foundation"
+        }
+      case "Biceps":
+        return {
+          card: "bg-emerald-50",
+          shadow: "shadow-[20px_20px_60px_#a7f3d0,-20px_-20px_60px_#ffffff]",
+          icon: "text-emerald-500",
+          gradient: "from-emerald-400 via-emerald-500 to-teal-600",
+          subtitle: "Power up your pulls"
+        }
+      case "Shoulders":
+        return {
+          card: "bg-orange-50",
+          shadow: "shadow-[20px_20px_60px_#fed7aa,-20px_-20px_60px_#ffffff]",
+          icon: "text-orange-500",
+          gradient: "from-orange-400 via-orange-500 to-red-500",
+          subtitle: "Build broad shoulders"
+        }
+      case "Abs/Core":
+        return {
+          card: "bg-purple-50",
+          shadow: "shadow-[20px_20px_60px_#ddd6fe,-20px_-20px_60px_#ffffff]",
+          icon: "text-purple-500",
+          gradient: "from-purple-400 via-purple-500 to-pink-500",
+          subtitle: "Strengthen your core"
+        }
+      case "Legs":
+        return {
+          card: "bg-red-50",
+          shadow: "shadow-[20px_20px_60px_#fecaca,-20px_-20px_60px_#ffffff]",
+          icon: "text-red-500",
+          gradient: "from-red-400 via-red-500 to-rose-600",
+          subtitle: "Power through leg day"
+        }
+      default:
+        return {
+          card: "bg-white",
+          shadow: "shadow-[20px_20px_60px_#bebebe,-20px_-20px_60px_#ffffff]",
+          icon: "text-yellow-500",
+          gradient: "from-yellow-400 via-yellow-500 to-orange-500",
+          subtitle: "Get stronger today"
+        }
+    }
+  }
 
   const toggleExercise = (dayIndex: number, exerciseIndex: number) => {
     const key = `${dayIndex}-${exerciseIndex}`
@@ -673,83 +743,403 @@ function WorkoutScheduler() {
     }
   }
 
+  const scrollToActiveTab = (tabValue: string) => {
+    if (tabsScrollRef.current) {
+      const activeTab = tabsScrollRef.current.querySelector(`[data-state="active"]`) as HTMLElement
+      if (activeTab) {
+        const container = tabsScrollRef.current
+        const containerRect = container.getBoundingClientRect()
+        const tabRect = activeTab.getBoundingClientRect()
+
+        const scrollLeft = tabRect.left - containerRect.left + container.scrollLeft - (containerRect.width / 2) + (tabRect.width / 2)
+
+        container.scrollTo({
+          left: scrollLeft,
+          behavior: 'smooth'
+        })
+      }
+    }
+  }
+
+  const handleDayClick = (day: string) => {
+    const workoutDay = mapDayToWorkout(day)
+    setActiveDay(workoutDay)
+    // Small delay to ensure the tab state is updated before scrolling
+    setTimeout(() => scrollToActiveTab(workoutDay), 100)
+  }
+
+  useEffect(() => {
+    // Scroll to active tab when activeDay changes
+    setTimeout(() => scrollToActiveTab(activeDay), 100)
+  }, [activeDay])
+
+  const MuscleIllustration = ({ primaryMuscles, secondaryMuscles, colors }: {
+    primaryMuscles: string[],
+    secondaryMuscles: string[],
+    colors: any
+  }) => {
+    const getMusclePosition = (muscle: string) => {
+      const positions: { [key: string]: { x: number, y: number, width: number, height: number } } = {
+        // Upper body
+        "Pectorals": { x: 40, y: 30, width: 25, height: 12 },
+        "Upper Pectorals": { x: 40, y: 26, width: 25, height: 8 },
+        "Middle Pectorals": { x: 40, y: 30, width: 25, height: 8 },
+        "Lower Pectorals": { x: 40, y: 36, width: 25, height: 8 },
+        "Inner Pectorals": { x: 46, y: 30, width: 13, height: 12 },
+
+        // Shoulders
+        "Anterior Deltoids": { x: 28, y: 25, width: 10, height: 12 },
+        "Medial Deltoids": { x: 24, y: 22, width: 10, height: 10 },
+        "Posterior Deltoids": { x: 20, y: 25, width: 10, height: 12 },
+        "Deltoids": { x: 24, y: 22, width: 12, height: 12 },
+
+        // Arms
+        "Triceps": { x: 72, y: 30, width: 7, height: 16 },
+        "Triceps Long Head": { x: 72, y: 30, width: 7, height: 12 },
+        "Triceps Lateral Head": { x: 74, y: 34, width: 5, height: 8 },
+        "Biceps": { x: 15, y: 30, width: 7, height: 16 },
+        "Biceps Brachii": { x: 15, y: 30, width: 7, height: 16 },
+        "Biceps Long Head": { x: 13, y: 30, width: 5, height: 14 },
+        "Biceps Short Head": { x: 17, y: 32, width: 5, height: 12 },
+        "Brachialis": { x: 15, y: 42, width: 7, height: 8 },
+        "Brachioradialis": { x: 17, y: 46, width: 5, height: 12 },
+
+        // Back
+        "Latissimus Dorsi": { x: 30, y: 35, width: 18, height: 20 },
+        "Lower Latissimus Dorsi": { x: 30, y: 42, width: 18, height: 13 },
+        "Rhomboids": { x: 42, y: 28, width: 12, height: 10 },
+        "Middle Trapezius": { x: 38, y: 20, width: 20, height: 12 },
+        "Upper Trapezius": { x: 42, y: 16, width: 12, height: 8 },
+        "Teres Major": { x: 26, y: 32, width: 8, height: 6 },
+        "Rear Deltoids": { x: 20, y: 25, width: 10, height: 12 },
+        "Erector Spinae": { x: 48, y: 40, width: 4, height: 25 },
+
+        // Core
+        "Rectus Abdominis": { x: 44, y: 50, width: 16, height: 20 },
+        "Lower Rectus Abdominis": { x: 44, y: 62, width: 16, height: 8 },
+        "Obliques": { x: 32, y: 54, width: 10, height: 16 },
+        "Transverse Abdominis": { x: 40, y: 50, width: 24, height: 20 },
+        "Serratus Anterior": { x: 30, y: 40, width: 6, height: 12 },
+
+        // Legs
+        "Quadriceps": { x: 40, y: 75, width: 12, height: 16 },
+        "Hamstrings": { x: 44, y: 80, width: 10, height: 14 },
+        "Glutes": { x: 40, y: 70, width: 16, height: 10 },
+        "Calves": { x: 42, y: 96, width: 8, height: 12 },
+        "Soleus": { x: 42, y: 100, width: 8, height: 8 },
+        "Hip Flexors": { x: 44, y: 67, width: 10, height: 6 },
+
+        // Full body
+        "Full Body": { x: 25, y: 20, width: 50, height: 70 },
+        "Core": { x: 40, y: 50, width: 24, height: 20 }
+      }
+      return positions[muscle] || { x: 48, y: 55, width: 8, height: 8 }
+    }
+
+    const isPrimary = (muscle: string) => primaryMuscles.includes(muscle)
+    const isSecondary = (muscle: string) => secondaryMuscles.includes(muscle)
+    const allMuscles = [...primaryMuscles, ...secondaryMuscles]
+
+    const getColorHex = (baseColor: string, isPrimary: boolean) => {
+      const colorMap = {
+        'blue': isPrimary ? '#1d4ed8' : '#93c5fd',
+        'indigo': isPrimary ? '#3730a3' : '#a5b4fc',
+        'green': isPrimary ? '#047857' : '#6ee7b7',
+        'emerald': isPrimary ? '#065f46' : '#6ee7b7',
+        'orange': isPrimary ? '#c2410c' : '#fdba74',
+        'purple': isPrimary ? '#6b21a8' : '#c4b5fd',
+        'red': isPrimary ? '#b91c1c' : '#fca5a5',
+        'yellow': isPrimary ? '#b45309' : '#fcd34d'
+      }
+      return colorMap[baseColor as keyof typeof colorMap] || (isPrimary ? '#b45309' : '#fcd34d')
+    }
+
+    return (
+      <div className="flex justify-center mb-4">
+        <svg width="240" height="300" viewBox="0 0 110 140" className="border-2 border-gray-300 rounded-xl bg-gradient-to-b from-gray-50 to-gray-100 shadow-lg">
+          {/* Enhanced muscular body outline */}
+
+          {/* Head */}
+          <circle cx="55" cy="12" r="8" fill="#f8fafc" stroke="#64748b" strokeWidth="2" />
+          <circle cx="52" cy="10" r="1.5" fill="#374151" />
+          <circle cx="58" cy="10" r="1.5" fill="#374151" />
+          <path d="M52 14 Q55 16 58 14" fill="none" stroke="#374151" strokeWidth="1.5" />
+
+          {/* Neck */}
+          <rect x="50" y="20" width="10" height="8" rx="3" fill="#f8fafc" stroke="#64748b" strokeWidth="1.5" />
+
+          {/* Torso - muscular definition */}
+          <path
+            d="M38 28 Q42 26 46 28 L50 30 L60 30 L64 28 Q68 26 72 28 
+               L76 36 Q78 42 76 48 L74 58 Q73 68 71 74 
+               L68 82 Q63 86 58 86 L52 86 Q47 86 42 82 
+               L39 74 Q37 68 39 58 L41 48 Q39 42 41 36 Z"
+            fill="#f8fafc"
+            stroke="#64748b"
+            strokeWidth="2"
+          />
+
+          {/* Chest definition */}
+          <path d="M46 34 Q55 37 64 34" fill="none" stroke="#94a3b8" strokeWidth="1.5" opacity="0.8" />
+          <path d="M44 40 Q55 43 66 40" fill="none" stroke="#94a3b8" strokeWidth="1.5" opacity="0.8" />
+
+          {/* Abs definition */}
+          <line x1="55" y1="52" x2="55" y2="78" stroke="#94a3b8" strokeWidth="1.5" opacity="0.8" />
+          <line x1="48" y1="57" x2="62" y2="57" stroke="#94a3b8" strokeWidth="1" opacity="0.6" />
+          <line x1="48" y1="64" x2="62" y2="64" stroke="#94a3b8" strokeWidth="1" opacity="0.6" />
+          <line x1="48" y1="71" x2="62" y2="71" stroke="#94a3b8" strokeWidth="1" opacity="0.6" />
+
+          {/* Arms - more muscular */}
+          <ellipse cx="28" cy="36" rx="9" ry="14" fill="#f8fafc" stroke="#64748b" strokeWidth="2" />
+          <ellipse cx="20" cy="52" rx="7" ry="12" fill="#f8fafc" stroke="#64748b" strokeWidth="2" />
+          <path d="M25 44 Q23 47 25 50" fill="none" stroke="#94a3b8" strokeWidth="1.5" opacity="0.7" />
+
+          <ellipse cx="82" cy="36" rx="9" ry="14" fill="#f8fafc" stroke="#64748b" strokeWidth="2" />
+          <ellipse cx="90" cy="52" rx="7" ry="12" fill="#f8fafc" stroke="#64748b" strokeWidth="2" />
+          <path d="M85 44 Q87 47 85 50" fill="none" stroke="#94a3b8" strokeWidth="1.5" opacity="0.7" />
+
+          {/* Legs - defined */}
+          <ellipse cx="46" cy="98" rx="11" ry="20" fill="#f8fafc" stroke="#64748b" strokeWidth="2" />
+          <ellipse cx="43" cy="124" rx="8" ry="14" fill="#f8fafc" stroke="#64748b" strokeWidth="2" />
+          <path d="M41 88 Q43 96 41 104" fill="none" stroke="#94a3b8" strokeWidth="1.5" opacity="0.7" />
+          <path d="M51 88 Q49 96 51 104" fill="none" stroke="#94a3b8" strokeWidth="1.5" opacity="0.7" />
+
+          <ellipse cx="64" cy="98" rx="11" ry="20" fill="#f8fafc" stroke="#64748b" strokeWidth="2" />
+          <ellipse cx="67" cy="124" rx="8" ry="14" fill="#f8fafc" stroke="#64748b" strokeWidth="2" />
+          <path d="M59 88 Q61 96 59 104" fill="none" stroke="#94a3b8" strokeWidth="1.5" opacity="0.7" />
+          <path d="M69 88 Q67 96 69 104" fill="none" stroke="#94a3b8" strokeWidth="1.5" opacity="0.7" />
+
+          {/* Muscle groups with enhanced visibility */}
+          {allMuscles.map((muscle, idx) => {
+            const pos = getMusclePosition(muscle)
+            const primary = isPrimary(muscle)
+            const baseColor = colors.icon.replace('text-', '').replace('-500', '')
+
+            return (
+              <ellipse
+                key={idx}
+                cx={pos.x + pos.width / 2}
+                cy={pos.y + pos.height / 2}
+                rx={pos.width / 2}
+                ry={pos.height / 2}
+                fill={getColorHex(baseColor, primary)}
+                opacity={primary ? "0.95" : "0.65"}
+                stroke={primary ? "#ffffff" : "rgba(255,255,255,0.7)"}
+                strokeWidth={primary ? "2" : "1"}
+                filter={primary ? "drop-shadow(0 3px 6px rgba(0,0,0,0.3))" : "drop-shadow(0 1px 3px rgba(0,0,0,0.2))"}
+              />
+            )
+          })}
+
+          {/* Enhanced labels for primary muscles */}
+          {allMuscles.filter(muscle => isPrimary(muscle)).slice(0, 2).map((muscle, idx) => {
+            const pos = getMusclePosition(muscle)
+            const shortName = muscle.split(' ')[0]
+            return (
+              <g key={`label-${idx}`}>
+                <rect
+                  x={pos.x + pos.width / 2 - shortName.length * 2.5}
+                  y={pos.y + pos.height / 2 - 4}
+                  width={shortName.length * 5}
+                  height="8"
+                  rx="4"
+                  fill="rgba(0,0,0,0.85)"
+                  stroke="rgba(255,255,255,0.3)"
+                  strokeWidth="0.5"
+                />
+                <text
+                  x={pos.x + pos.width / 2}
+                  y={pos.y + pos.height / 2 + 1.5}
+                  textAnchor="middle"
+                  fontSize="5"
+                  fill="white"
+                  fontWeight="bold"
+                  className="select-none"
+                >
+                  {shortName}
+                </text>
+              </g>
+            )
+          })}
+        </svg>
+      </div>
+    )
+  }
+
+  const getMuscleActivation = (exerciseName: string, targetMuscle: string) => {
+    const activationMap: { [key: string]: { primary: string[], secondary: string[] } } = {
+      // Chest exercises
+      "Barbell Bench Press": { primary: ["Pectorals", "Anterior Deltoids"], secondary: ["Triceps", "Serratus Anterior"] },
+      "Incline Barbell Press": { primary: ["Upper Pectorals", "Anterior Deltoids"], secondary: ["Triceps", "Serratus Anterior"] },
+      "Flat Barbell Bench Press": { primary: ["Middle Pectorals", "Anterior Deltoids"], secondary: ["Triceps", "Serratus Anterior"] },
+      "Decline Barbell Press": { primary: ["Lower Pectorals", "Anterior Deltoids"], secondary: ["Triceps", "Serratus Anterior"] },
+      "Incline Dumbbell Flyes": { primary: ["Upper Pectorals"], secondary: ["Anterior Deltoids", "Serratus Anterior"] },
+      "Flat Dumbbell Flyes": { primary: ["Middle Pectorals"], secondary: ["Anterior Deltoids", "Serratus Anterior"] },
+
+      // Triceps exercises
+      "Dips": { primary: ["Triceps", "Lower Pectorals"], secondary: ["Anterior Deltoids", "Rhomboids"] },
+      "Close-Grip Bench Press": { primary: ["Triceps", "Inner Pectorals"], secondary: ["Anterior Deltoids"] },
+      "Overhead Dumbbell Extension": { primary: ["Triceps Long Head"], secondary: ["Triceps Lateral Head", "Core"] },
+      "Diamond Push-ups": { primary: ["Triceps", "Inner Pectorals"], secondary: ["Anterior Deltoids", "Core"] },
+
+      // Back exercises
+      "Pull-ups": { primary: ["Latissimus Dorsi", "Rhomboids"], secondary: ["Biceps", "Middle Trapezius", "Rear Deltoids"] },
+      "Wide-Grip Pull-ups": { primary: ["Latissimus Dorsi", "Teres Major"], secondary: ["Biceps", "Rhomboids"] },
+      "Close-Grip Pull-ups": { primary: ["Middle Trapezius", "Rhomboids"], secondary: ["Latissimus Dorsi", "Biceps"] },
+      "Lat Pulldown": { primary: ["Latissimus Dorsi"], secondary: ["Biceps", "Rhomboids", "Middle Trapezius"] },
+      "Wide-Grip Lat Pulldown": { primary: ["Latissimus Dorsi", "Teres Major"], secondary: ["Biceps", "Rhomboids"] },
+      "Barbell Rows": { primary: ["Middle Trapezius", "Rhomboids"], secondary: ["Latissimus Dorsi", "Biceps", "Rear Deltoids"] },
+      "Bent-Over Barbell Rows": { primary: ["Middle Trapezius", "Rhomboids"], secondary: ["Latissimus Dorsi", "Biceps", "Rear Deltoids"] },
+      "T-Bar Rows": { primary: ["Middle Trapezius", "Rhomboids"], secondary: ["Latissimus Dorsi", "Biceps"] },
+      "Cable Rows": { primary: ["Middle Trapezius", "Rhomboids"], secondary: ["Latissimus Dorsi", "Biceps"] },
+      "Cable Rows (Low)": { primary: ["Lower Latissimus Dorsi", "Rhomboids"], secondary: ["Middle Trapezius", "Biceps"] },
+
+      // Biceps exercises
+      "Barbell Curls": { primary: ["Biceps Brachii"], secondary: ["Brachialis", "Brachioradialis"] },
+      "Incline Dumbbell Curls": { primary: ["Biceps Long Head"], secondary: ["Biceps Short Head", "Brachialis"] },
+      "Hammer Curls": { primary: ["Brachialis", "Brachioradialis"], secondary: ["Biceps Long Head"] },
+      "Concentration Curls": { primary: ["Biceps Short Head"], secondary: ["Brachialis"] },
+
+      // Shoulder exercises
+      "Overhead Press": { primary: ["Anterior Deltoids", "Medial Deltoids"], secondary: ["Triceps", "Upper Trapezius"] },
+      "Dumbbell Shoulder Press": { primary: ["Anterior Deltoids", "Medial Deltoids"], secondary: ["Triceps", "Upper Trapezius"] },
+      "Lateral Raises": { primary: ["Medial Deltoids"], secondary: ["Anterior Deltoids", "Upper Trapezius"] },
+      "Front Raises": { primary: ["Anterior Deltoids"], secondary: ["Medial Deltoids", "Upper Pectorals"] },
+      "Rear Delt Flyes": { primary: ["Posterior Deltoids"], secondary: ["Middle Trapezius", "Rhomboids"] },
+
+      // Core exercises
+      "Plank": { primary: ["Rectus Abdominis", "Transverse Abdominis"], secondary: ["Obliques", "Erector Spinae"] },
+      "Ab Wheel Rollouts": { primary: ["Rectus Abdominis", "Transverse Abdominis"], secondary: ["Obliques", "Latissimus Dorsi"] },
+      "Russian Twists": { primary: ["Obliques"], secondary: ["Rectus Abdominis", "Transverse Abdominis"] },
+      "Dead Bug": { primary: ["Transverse Abdominis", "Multifidus"], secondary: ["Rectus Abdominis", "Obliques"] },
+      "Mountain Climbers": { primary: ["Rectus Abdominis", "Hip Flexors"], secondary: ["Obliques", "Shoulders"] },
+      "Hanging Knee Raises": { primary: ["Lower Rectus Abdominis", "Hip Flexors"], secondary: ["Obliques"] },
+      "Side Plank": { primary: ["Obliques", "Quadratus Lumborum"], secondary: ["Transverse Abdominis", "Medial Deltoids"] },
+      "Bicycle Crunches": { primary: ["Rectus Abdominis", "Obliques"], secondary: ["Hip Flexors"] },
+
+      // Leg exercises
+      "Barbell Squats": { primary: ["Quadriceps", "Glutes"], secondary: ["Hamstrings", "Calves", "Core"] },
+      "Leg Press": { primary: ["Quadriceps", "Glutes"], secondary: ["Hamstrings", "Calves"] },
+      "Romanian Deadlifts": { primary: ["Hamstrings", "Glutes"], secondary: ["Erector Spinae", "Quadriceps"] },
+      "Walking Lunges": { primary: ["Quadriceps", "Glutes"], secondary: ["Hamstrings", "Calves", "Core"] },
+      "Leg Extensions": { primary: ["Quadriceps"], secondary: [] },
+      "Calf Raises": { primary: ["Calves"], secondary: ["Soleus"] },
+
+      // Warmup exercises
+      "Jumping Jacks": { primary: ["Full Body"], secondary: ["Cardiovascular System"] },
+      "Push-ups": { primary: ["Pectorals", "Triceps"], secondary: ["Anterior Deltoids", "Core"] },
+      "Bodyweight Squats": { primary: ["Quadriceps", "Glutes"], secondary: ["Hamstrings", "Calves"] },
+      "Lunges": { primary: ["Quadriceps", "Glutes"], secondary: ["Hamstrings", "Calves", "Core"] },
+      "Arm Circles": { primary: ["Deltoids"], secondary: ["Rotator Cuff"] },
+      "High Knees": { primary: ["Hip Flexors", "Quadriceps"], secondary: ["Calves", "Core"] },
+      "Butt Kicks": { primary: ["Hamstrings", "Glutes"], secondary: ["Calves"] },
+      "Dynamic Stretching": { primary: ["Full Body Mobility"], secondary: ["Joint Preparation"] }
+    }
+
+    return activationMap[exerciseName] || { primary: [targetMuscle], secondary: [] }
+  }
+
   return (
     <div className="relative">
       <ParticlesBackground />
       <div className="min-h-screen bg-white">
-        <div className="max-w-7xl mx-auto p-6 relative z-20">
+        <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 relative z-20">
           <Card className="mb-10 bg-white shadow-[20px_20px_60px_#bebebe,-20px_-20px_60px_#ffffff] border-0 rounded-3xl">
-            <CardHeader className="pb-6">
-              <CardTitle className="text-gray-800 flex items-center gap-4 text-2xl font-bold">
-                <Clock className="h-7 w-7 text-yellow-500" />
-                Weekly Workout Schedule
+            <CardHeader className="pb-4 sm:pb-6 px-4 sm:px-6">
+              <CardTitle className="relative">
+                <div className="flex items-center gap-3 sm:gap-4 p-4 sm:p-6 bg-gradient-to-r from-yellow-400 via-yellow-500 to-orange-500 rounded-2xl shadow-[inset_8px_8px_16px_rgba(255,255,255,0.3),inset_-8px_-8px_16px_rgba(0,0,0,0.1)] text-white">
+                  <div className="p-2 sm:p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                    <Clock className="h-5 w-5 sm:h-7 sm:w-7 text-white drop-shadow-sm" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg sm:text-2xl font-bold tracking-wide drop-shadow-sm">Weekly Workout Schedule</h2>
+                    <p className="text-xs sm:text-sm text-white/80 font-medium mt-1">Plan your fitness journey</p>
+                  </div>
+                </div>
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-7 gap-4">
-                {getWeekSchedule().map((item, index) => (
-                  <div
-                    key={index}
-                    className={`p-5 rounded-2xl text-center transition-all duration-300 select-none ${
-                      item.workout
-                        ? "bg-gray-100 text-gray-800 cursor-pointer hover:scale-105 shadow-[inset_8px_8px_16px_#bebebe,inset_-8px_-8px_16px_#ffffff] hover:shadow-[inset_12px_12px_20px_#bebebe,inset_-12px_-12px_20px_#ffffff] hover:bg-yellow-50"
+            <CardContent className="px-4 sm:px-6">
+              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4">
+                {getWeekSchedule().map((item, index) => {
+                  const isActive = item.workout && (
+                    activeDay === "Warmup" ||
+                    activeDay === mapDayToWorkout(item.day)
+                  )
+
+                  return (
+                    <div
+                      key={index}
+                      className={`p-3 sm:p-5 rounded-2xl text-center transition-all duration-300 select-none ${item.workout
+                        ? isActive
+                          ? "bg-yellow-100 text-yellow-800 cursor-pointer shadow-[inset_12px_12px_20px_#d4af37,inset_-12px_-12px_20px_#ffeb3b] border-2 border-yellow-300"
+                          : "bg-gray-100 text-gray-800 cursor-pointer hover:scale-105 shadow-[inset_8px_8px_16px_#bebebe,inset_-8px_-8px_16px_#ffffff] hover:shadow-[inset_12px_12px_20px_#bebebe,inset_-12px_-12px_20px_#ffffff] hover:bg-yellow-50"
                         : "bg-gray-50 text-gray-400 border-2 border-dashed border-gray-300 shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff]"
-                    }`}
-                    onClick={() => item.workout && setActiveDay(mapDayToWorkout(item.day))}
-                  >
-                    <div className="font-bold text-base mb-2">{item.day}</div>
-                    <div className="text-sm opacity-90 font-medium">
-                      {item.workout ? item.workout.muscles.join(" & ") : "Rest Day"}
+                        }`}
+                      onClick={() => item.workout && handleDayClick(item.day)}
+                    >
+                      <div className="font-bold text-sm sm:text-base mb-1 sm:mb-2">{item.day}</div>
+                      <div className="text-xs sm:text-sm opacity-90 font-medium">
+                        {item.workout ? item.workout.muscles.join(" & ") : "Rest Day"}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             </CardContent>
           </Card>
 
           <Tabs value={activeDay} onValueChange={setActiveDay}>
-            <TabsList className="grid w-full grid-cols-5 mb-10 bg-gray-100 p-4 rounded-3xl shadow-[20px_20px_60px_#bebebe,-20px_-20px_60px_#ffffff] border-0 select-none gap-3">
-              <TabsTrigger
-                value="Warmup"
-                className="data-[state=active]:bg-yellow-400 data-[state=active]:text-white data-[state=active]:shadow-[inset_8px_8px_16px_#d4af37,inset_-8px_-8px_16px_#ffeb3b] rounded-2xl font-semibold text-gray-700 transition-all duration-200 select-none shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff] hover:shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff] py-4 px-3 text-sm"
-              >
-                Warmup
-              </TabsTrigger>
-              <TabsTrigger
-                value="Sunday"
-                className="data-[state=active]:bg-yellow-400 data-[state=active]:text-white data-[state=active]:shadow-[inset_8px_8px_16px_#d4af37,inset_-8px_-8px_16px_#ffeb3b] rounded-2xl font-semibold text-gray-700 transition-all duration-200 select-none shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff] hover:shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff] py-4 px-3 text-sm"
-              >
-                Chest & Triceps
-              </TabsTrigger>
-              <TabsTrigger
-                value="Monday"
-                className="data-[state=active]:bg-yellow-400 data-[state=active]:text-white data-[state=active]:shadow-[inset_8px_8px_16px_#d4af37,inset_-8px_-8px_16px_#ffeb3b] rounded-2xl font-semibold text-gray-700 transition-all duration-200 select-none shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff] hover:shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff] py-4 px-3 text-sm"
-              >
-                Back & Biceps
-              </TabsTrigger>
-              <TabsTrigger
-                value="Tuesday"
-                className="data-[state=active]:bg-yellow-400 data-[state=active]:text-white data-[state=active]:shadow-[inset_8px_8px_16px_#d4af37,inset_-8px_-8px_16px_#ffeb3b] rounded-2xl font-semibold text-gray-700 transition-all duration-200 select-none shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff] hover:shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff] py-4 px-3 text-sm"
-              >
-                Shoulders & Abs
-              </TabsTrigger>
-              <TabsTrigger
-                value="Friday"
-                className="data-[state=active]:bg-yellow-400 data-[state=active]:text-white data-[state=active]:shadow-[inset_8px_8px_16px_#d4af37,inset_-8px_-8px_16px_#ffeb3b] rounded-2xl font-semibold text-gray-700 transition-all duration-200 select-none shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff] hover:shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff] py-4 px-3 text-sm"
-              >
-                Shoulders & Legs
-              </TabsTrigger>
-            </TabsList>
+            <div ref={tabsScrollRef} className="mb-10 bg-gray-100 p-4 rounded-3xl shadow-[20px_20px_60px_#bebebe,-20px_-20px_60px_#ffffff] border-0 select-none overflow-x-auto">
+              <TabsList className="flex w-max min-w-full gap-3 bg-transparent p-0">
+                <TabsTrigger
+                  value="Warmup"
+                  className="data-[state=active]:bg-yellow-400 data-[state=active]:text-white data-[state=active]:shadow-[inset_8px_8px_16px_#d4af37,inset_-8px_-8px_16px_#ffeb3b] rounded-2xl font-semibold text-gray-700 transition-all duration-200 select-none shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff] hover:shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff] py-4 px-6 text-sm whitespace-nowrap flex-shrink-0"
+                >
+                  Warmup
+                </TabsTrigger>
+                <TabsTrigger
+                  value="Sunday"
+                  className="data-[state=active]:bg-yellow-400 data-[state=active]:text-white data-[state=active]:shadow-[inset_8px_8px_16px_#d4af37,inset_-8px_-8px_16px_#ffeb3b] rounded-2xl font-semibold text-gray-700 transition-all duration-200 select-none shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff] hover:shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff] py-4 px-6 text-sm whitespace-nowrap flex-shrink-0"
+                >
+                  Chest & Triceps
+                </TabsTrigger>
+                <TabsTrigger
+                  value="Monday"
+                  className="data-[state=active]:bg-yellow-400 data-[state=active]:text-white data-[state=active]:shadow-[inset_8px_8px_16px_#d4af37,inset_-8px_-8px_16px_#ffeb3b] rounded-2xl font-semibold text-gray-700 transition-all duration-200 select-none shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff] hover:shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff] py-4 px-6 text-sm whitespace-nowrap flex-shrink-0"
+                >
+                  Back & Biceps
+                </TabsTrigger>
+                <TabsTrigger
+                  value="Tuesday"
+                  className="data-[state=active]:bg-yellow-400 data-[state=active]:text-white data-[state=active]:shadow-[inset_8px_8px_16px_#d4af37,inset_-8px_-8px_16px_#ffeb3b] rounded-2xl font-semibold text-gray-700 transition-all duration-200 select-none shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff] hover:shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff] py-4 px-6 text-sm whitespace-nowrap flex-shrink-0"
+                >
+                  Shoulders & Abs
+                </TabsTrigger>
+                <TabsTrigger
+                  value="Friday"
+                  className="data-[state=active]:bg-yellow-400 data-[state=active]:text-white data-[state=active]:shadow-[inset_8px_8px_16px_#d4af37,inset_-8px_-8px_16px_#ffeb3b] rounded-2xl font-semibold text-gray-700 transition-all duration-200 select-none shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff] hover:shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff] py-4 px-6 text-sm whitespace-nowrap flex-shrink-0"
+                >
+                  Shoulders & Legs
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
             <TabsContent value="Warmup">
               <Card className="bg-white shadow-[20px_20px_60px_#bebebe,-20px_-20px_60px_#ffffff] border-0 rounded-3xl">
-                <CardHeader className="pb-6">
-                  <CardTitle className="text-gray-800 flex items-center gap-4 text-2xl font-bold">
-                    <Zap className="h-7 w-7 text-yellow-500" />
-                    Warmup Exercises - Prepare Your Body
+                <CardHeader className="pb-4 sm:pb-6 px-4 sm:px-6">
+                  <CardTitle className="relative">
+                    <div className="flex items-center gap-3 sm:gap-4 p-4 sm:p-6 bg-gradient-to-r from-orange-400 via-red-500 to-pink-500 rounded-2xl shadow-[inset_8px_8px_16px_rgba(255,255,255,0.3),inset_-8px_-8px_16px_rgba(0,0,0,0.1)] text-white">
+                      <div className="p-2 sm:p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                        <Zap className="h-5 w-5 sm:h-7 sm:w-7 text-white drop-shadow-sm" />
+                      </div>
+                      <div>
+                        <h2 className="text-lg sm:text-2xl font-bold tracking-wide drop-shadow-sm">Warmup Exercises</h2>
+                        <p className="text-xs sm:text-sm text-white/80 font-medium mt-1">Prepare your body for action</p>
+                      </div>
+                    </div>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-8">
+                <CardContent className="space-y-4 sm:space-y-8 px-4 sm:px-6">
                   {warmupExercises.map((exercise, exerciseIndex) => {
                     const isCompleted = completedExercises.has(`warmup-${exerciseIndex}`)
                     const exerciseKey = `warmup-${exerciseIndex}`
@@ -758,11 +1148,10 @@ function WorkoutScheduler() {
                     return (
                       <div
                         key={exerciseIndex}
-                        className={`p-8 rounded-3xl transition-all duration-300 cursor-pointer select-none ${
-                          isCompleted
-                            ? "bg-yellow-50 shadow-[inset_20px_20px_60px_#e6d700,inset_-20px_-20px_60px_#ffff00] border-2 border-yellow-200"
-                            : "bg-gray-50 shadow-[20px_20px_60px_#bebebe,-20px_-20px_60px_#ffffff] hover:shadow-[inset_8px_8px_16px_#bebebe,inset_-8px_-8px_16px_#ffffff] hover:bg-gray-100"
-                        }`}
+                        className={`p-4 sm:p-8 rounded-3xl transition-all duration-300 cursor-pointer select-none ${isCompleted
+                          ? "bg-yellow-50 shadow-[inset_20px_20px_60px_#e6d700,inset_-20px_-20px_60px_#ffff00] border-2 border-yellow-200"
+                          : "bg-gray-50 shadow-[20px_20px_60px_#bebebe,-20px_-20px_60px_#ffffff] hover:shadow-[inset_8px_8px_16px_#bebebe,inset_-8px_-8px_16px_#ffffff] hover:bg-gray-100"
+                          }`}
                         onClick={() => {
                           const key = `warmup-${exerciseIndex}`
                           const newCompleted = new Set(completedExercises)
@@ -776,9 +1165,9 @@ function WorkoutScheduler() {
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <div className="flex items-center gap-4 mb-6 select-none">
-                              <h4 className="font-bold text-gray-800 text-2xl">{exercise.name}</h4>
-                              {isCompleted && <CheckCircle2 className="h-7 w-7 text-yellow-500" />}
+                            <div className="flex items-center gap-2 sm:gap-4 mb-4 sm:mb-6 select-none">
+                              <h4 className="font-bold text-gray-800 text-lg sm:text-2xl">{exercise.name}</h4>
+                              {isCompleted && <CheckCircle2 className="h-5 w-5 sm:h-7 sm:w-7 text-yellow-500" />}
                               <Button
                                 size="sm"
                                 variant="ghost"
@@ -822,21 +1211,58 @@ function WorkoutScheduler() {
                                 </div>
                               )}
                             </div>
-                            {exercise.muscleIllustration && (
-                              <div className="mt-8 pt-8 border-t-2 border-gray-200 select-none">
-                                <div className="flex items-center gap-3 mb-4 select-none">
-                                  <Target className="h-6 w-6 text-yellow-600" />
-                                  <h5 className="text-xl font-bold text-gray-800">Muscle Activation</h5>
-                                </div>
-                                <div className="bg-gray-50 p-6 rounded-3xl shadow-[inset_20px_20px_60px_#bebebe,-20px_-20px_60px_#ffffff] select-none">
-                                  <img
-                                    src={exercise.muscleIllustration || "/placeholder.svg"}
-                                    alt={`${exercise.name} muscle activation`}
-                                    className="w-full max-w-md mx-auto rounded-2xl shadow-[20px_20px_60px_#bebebe,-20px_-20px_60px_#ffffff]"
-                                  />
-                                </div>
+                            <div className="mt-6 pt-6 border-t-2 border-gray-200 select-none">
+                              <div className="flex items-center gap-3 mb-4 select-none">
+                                <Target className="h-6 w-6 text-orange-600" />
+                                <h5 className="text-lg sm:text-xl font-bold text-gray-800">Muscle Activation</h5>
                               </div>
-                            )}
+                              {(() => {
+                                const activation = getMuscleActivation(exercise.name, exercise.targetMuscle)
+                                return (
+                                  <div className="bg-gradient-to-br from-orange-50 to-red-50 p-4 sm:p-6 rounded-2xl shadow-[inset_12px_12px_24px_rgba(251,146,60,0.1),inset_-12px_-12px_24px_rgba(255,255,255,0.8)] border border-orange-100">
+                                    <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
+                                      <div>
+                                        <MuscleIllustration
+                                          primaryMuscles={activation.primary}
+                                          secondaryMuscles={activation.secondary}
+                                          colors={{ icon: "text-orange-500" }}
+                                        />
+                                      </div>
+                                      <div className="space-y-4">
+                                        <div>
+                                          <h6 className="text-sm font-bold text-orange-800 mb-3 flex items-center gap-2">
+                                            <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
+                                            Primary Muscles
+                                          </h6>
+                                          <div className="flex flex-wrap gap-2">
+                                            {activation.primary.map((muscle, idx) => (
+                                              <span key={idx} className="px-3 py-1.5 bg-orange-500 text-white text-xs sm:text-sm font-semibold rounded-full shadow-sm">
+                                                {muscle}
+                                              </span>
+                                            ))}
+                                          </div>
+                                        </div>
+                                        {activation.secondary.length > 0 && (
+                                          <div>
+                                            <h6 className="text-sm font-bold text-orange-700 mb-3 flex items-center gap-2">
+                                              <div className="w-3 h-3 bg-orange-300 rounded-full"></div>
+                                              Secondary Muscles
+                                            </h6>
+                                            <div className="flex flex-wrap gap-2">
+                                              {activation.secondary.map((muscle, idx) => (
+                                                <span key={idx} className="px-3 py-1.5 bg-orange-200 text-orange-800 text-xs sm:text-sm font-medium rounded-full shadow-sm">
+                                                  {muscle}
+                                                </span>
+                                              ))}
+                                            </div>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                )
+                              })()}
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -848,134 +1274,191 @@ function WorkoutScheduler() {
 
             {workoutPlan.map((workout, dayIndex) => (
               <TabsContent key={workout.day} value={workout.day}>
-                <div className="grid gap-10 lg:grid-cols-2">
-                  {workout.muscles.map((muscle) => (
-                    <Card
-                      key={muscle}
-                      className="bg-white shadow-[20px_20px_60px_#bebebe,-20px_-20px_60px_#ffffff] border-0 rounded-3xl"
-                    >
-                      <CardHeader className="pb-6">
-                        <CardTitle className="text-gray-800 flex items-center gap-4 text-2xl font-bold">
-                          <Target className="h-7 w-7 text-yellow-500" />
-                          {muscle} Exercises
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="space-y-8">
-                        {workout.exercises
-                          .filter((ex) => ex.targetMuscle === muscle)
-                          .map((exercise, exerciseIndex) => {
-                            const globalIndex = workout.exercises.findIndex((ex) => ex === exercise)
-                            const isCompleted = completedExercises.has(`${dayIndex}-${globalIndex}`)
-                            const exerciseKey = `${dayIndex}-${globalIndex}`
-                            const isVideoHidden = hiddenVideos.has(exerciseKey)
+                <div className="grid gap-4 sm:gap-6 lg:gap-10 lg:grid-cols-2">
+                  {workout.muscles.map((muscle) => {
+                    const colors = getMuscleGroupColors(muscle)
+                    return (
+                      <Card
+                        key={muscle}
+                        className={`${colors.card} ${colors.shadow} border-0 rounded-3xl`}
+                      >
+                        <CardHeader className="pb-4 sm:pb-6 px-4 sm:px-6">
+                          <CardTitle className="relative">
+                            <div className={`flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-gradient-to-r ${colors.gradient} rounded-xl shadow-[inset_6px_6px_12px_rgba(255,255,255,0.3),inset_-6px_-6px_12px_rgba(0,0,0,0.1)] text-white`}>
+                              <div className="p-1.5 sm:p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                                <Target className="h-4 w-4 sm:h-6 sm:w-6 text-white drop-shadow-sm" />
+                              </div>
+                              <div>
+                                <h3 className="text-base sm:text-xl font-bold tracking-wide drop-shadow-sm">{muscle} Exercises</h3>
+                                <p className="text-xs text-white/80 font-medium mt-0.5">{colors.subtitle}</p>
+                              </div>
+                            </div>
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4 sm:space-y-8 px-4 sm:px-6">
+                          {workout.exercises
+                            .filter((ex) => ex.targetMuscle === muscle)
+                            .map((exercise, exerciseIndex) => {
+                              const globalIndex = workout.exercises.findIndex((ex) => ex === exercise)
+                              const isCompleted = completedExercises.has(`${dayIndex}-${globalIndex}`)
+                              const exerciseKey = `${dayIndex}-${globalIndex}`
+                              const isVideoHidden = hiddenVideos.has(exerciseKey)
 
-                            return (
-                              <div
-                                key={exerciseIndex}
-                                className={`p-8 rounded-3xl transition-all duration-300 cursor-pointer select-none ${
-                                  isCompleted
+                              return (
+                                <div
+                                  key={exerciseIndex}
+                                  className={`p-4 sm:p-8 rounded-3xl transition-all duration-300 cursor-pointer select-none ${isCompleted
                                     ? "bg-yellow-50 shadow-[inset_20px_20px_60px_#e6d700,inset_-20px_-20px_60px_#ffff00] border-2 border-yellow-200"
                                     : "bg-gray-50 shadow-[20px_20px_60px_#bebebe,-20px_-20px_60px_#ffffff] hover:shadow-[inset_8px_8px_16px_#bebebe,inset_-8px_-8px_16px_#ffffff] hover:bg-gray-100"
-                                }`}
-                                onClick={() => toggleExercise(dayIndex, globalIndex)}
-                              >
-                                <div className="flex items-start justify-between">
-                                  <div className="flex-1">
-                                    <div className="flex items-center gap-4 mb-6 select-none">
-                                      <h4 className="font-bold text-gray-800 text-2xl">{exercise.name}</h4>
-                                      {isCompleted && <CheckCircle2 className="h-7 w-7 text-yellow-500" />}
-                                      <Button
-                                        size="sm"
-                                        variant="ghost"
-                                        className="h-10 w-10 p-0 text-gray-600 hover:text-gray-800 ml-auto rounded-2xl select-none shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff] hover:shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff] bg-gray-100"
-                                        onClick={(e) => toggleVideo(exerciseKey, e)}
-                                        title={isVideoHidden ? "Show video" : "Hide video"}
-                                      >
-                                        <EyeOff className="h-5 w-5" />
-                                      </Button>
-                                    </div>
-                                    {!isVideoHidden && (
-                                      <div className="mb-8">
-                                        <LazyVideo
-                                          videoUrl={exercise.videoUrl}
-                                          title={`${exercise.name} demonstration`}
-                                        />
-                                      </div>
-                                    )}
-                                    <div className="space-y-6 mb-8">
-                                      <div className="flex items-center gap-4 select-none">
-                                        <Dumbbell className="h-6 w-6 text-gray-600" />
-                                        <span className="text-lg text-gray-700 font-semibold">
-                                          {exercise.equipment}
-                                        </span>
-                                      </div>
-                                      <div className="flex gap-4 flex-wrap select-none">
-                                        <Badge
-                                          variant="outline"
-                                          className="text-base bg-gray-100 text-gray-700 border-0 px-4 py-2 font-semibold select-none shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff] rounded-2xl"
+                                    }`}
+                                  onClick={() => toggleExercise(dayIndex, globalIndex)}
+                                >
+                                  <div className="flex items-start justify-between">
+                                    <div className="flex-1">
+                                      <div className="flex items-center gap-2 sm:gap-4 mb-4 sm:mb-6 select-none">
+                                        <h4 className="font-bold text-gray-800 text-lg sm:text-2xl">{exercise.name}</h4>
+                                        {isCompleted && <CheckCircle2 className="h-5 w-5 sm:h-7 sm:w-7 text-yellow-500" />}
+                                        <Button
+                                          size="sm"
+                                          variant="ghost"
+                                          className="h-10 w-10 p-0 text-gray-600 hover:text-gray-800 ml-auto rounded-2xl select-none shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff] hover:shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff] bg-gray-100"
+                                          onClick={(e) => toggleVideo(exerciseKey, e)}
+                                          title={isVideoHidden ? "Show video" : "Hide video"}
                                         >
-                                          {exercise.sets} sets
-                                        </Badge>
-                                        <Badge
-                                          variant="outline"
-                                          className="text-base bg-yellow-100 text-yellow-700 border-0 px-4 py-2 font-semibold select-none shadow-[8px_8px_16px_#d4af37,-8px_-8px_16px_#ffeb3b] rounded-2xl"
-                                        >
-                                          {exercise.reps} reps
-                                        </Badge>
+                                          <EyeOff className="h-5 w-5" />
+                                        </Button>
                                       </div>
-                                      {exercise.notes && (
-                                        <div className="bg-yellow-50 p-6 rounded-3xl shadow-[inset_20px_20px_60px_#e6d700,inset_-20px_-20px_60px_#ffff00] border-2 border-yellow-200 select-none">
-                                          <div className="flex items-start gap-4 select-none">
-                                            <Target className="h-6 w-6 text-yellow-600 mt-1 flex-shrink-0" />
-                                            <p className="text-lg font-bold text-gray-800 leading-relaxed">
-                                              {exercise.notes}
-                                            </p>
-                                          </div>
-                                        </div>
-                                      )}
-                                    </div>
-                                    {exercise.muscleIllustration && (
-                                      <div className="mt-8 pt-8 border-t-2 border-gray-200 select-none">
-                                        <div className="flex items-center gap-3 mb-4 select-none">
-                                          <Target className="h-6 w-6 text-yellow-600" />
-                                          <h5 className="text-xl font-bold text-gray-800">Muscle Activation</h5>
-                                        </div>
-                                        <div className="bg-gray-50 p-6 rounded-3xl shadow-[inset_20px_20px_60px_#bebebe,-20px_-20px_60px_#ffffff] select-none">
-                                          <img
-                                            src={exercise.muscleIllustration || "/placeholder.svg"}
-                                            alt={`${exercise.name} muscle activation`}
-                                            className="w-full max-w-md mx-auto rounded-2xl shadow-[20px_20px_60px_#bebebe,-20px_-20px_60px_#ffffff]"
+                                      {!isVideoHidden && (
+                                        <div className="mb-8">
+                                          <LazyVideo
+                                            videoUrl={exercise.videoUrl}
+                                            title={`${exercise.name} demonstration`}
                                           />
                                         </div>
+                                      )}
+                                      <div className="space-y-6 mb-8">
+                                        <div className="flex items-center gap-4 select-none">
+                                          <Dumbbell className="h-6 w-6 text-gray-600" />
+                                          <span className="text-lg text-gray-700 font-semibold">
+                                            {exercise.equipment}
+                                          </span>
+                                        </div>
+                                        <div className="flex gap-4 flex-wrap select-none">
+                                          <Badge
+                                            variant="outline"
+                                            className="text-base bg-gray-100 text-gray-700 border-0 px-4 py-2 font-semibold select-none shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff] rounded-2xl"
+                                          >
+                                            {exercise.sets} sets
+                                          </Badge>
+                                          <Badge
+                                            variant="outline"
+                                            className="text-base bg-yellow-100 text-yellow-700 border-0 px-4 py-2 font-semibold select-none shadow-[8px_8px_16px_#d4af37,-8px_-8px_16px_#ffeb3b] rounded-2xl"
+                                          >
+                                            {exercise.reps} reps
+                                          </Badge>
+                                        </div>
+                                        {exercise.notes && (
+                                          <div className="bg-yellow-50 p-6 rounded-3xl shadow-[inset_20px_20px_60px_#e6d700,inset_-20px_-20px_60px_#ffff00] border-2 border-yellow-200 select-none">
+                                            <div className="flex items-start gap-4 select-none">
+                                              <Target className="h-6 w-6 text-yellow-600 mt-1 flex-shrink-0" />
+                                              <p className="text-lg font-bold text-gray-800 leading-relaxed">
+                                                {exercise.notes}
+                                              </p>
+                                            </div>
+                                          </div>
+                                        )}
                                       </div>
-                                    )}
+                                      <div className="mt-6 pt-6 border-t-2 border-gray-200 select-none">
+                                        <div className="flex items-center gap-3 mb-4 select-none">
+                                          <Target className={`h-6 w-6 ${colors.icon.replace('-500', '-600')}`} />
+                                          <h5 className="text-lg sm:text-xl font-bold text-gray-800">Muscle Activation</h5>
+                                        </div>
+                                        {(() => {
+                                          const activation = getMuscleActivation(exercise.name, exercise.targetMuscle)
+                                          const primaryColor = colors.icon.replace('text-', '').replace('-500', '')
+                                          return (
+                                            <div className="bg-white/50 backdrop-blur-sm p-4 sm:p-6 rounded-2xl shadow-[inset_8px_8px_16px_rgba(0,0,0,0.05),inset_-8px_-8px_16px_rgba(255,255,255,0.8)] border border-gray-200">
+                                              <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
+                                                <div>
+                                                  <MuscleIllustration
+                                                    primaryMuscles={activation.primary}
+                                                    secondaryMuscles={activation.secondary}
+                                                    colors={colors}
+                                                  />
+                                                </div>
+                                                <div className="space-y-4">
+                                                  <div>
+                                                    <h6 className="text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
+                                                      <div className={`w-3 h-3 ${colors.icon.replace('text-', 'bg-')} rounded-full`}></div>
+                                                      Primary Muscles
+                                                    </h6>
+                                                    <div className="flex flex-wrap gap-2">
+                                                      {activation.primary.map((muscle, idx) => (
+                                                        <span key={idx} className={`px-3 py-1.5 ${colors.icon.replace('text-', 'bg-')} text-white text-xs sm:text-sm font-semibold rounded-full shadow-sm`}>
+                                                          {muscle}
+                                                        </span>
+                                                      ))}
+                                                    </div>
+                                                  </div>
+                                                  {activation.secondary.length > 0 && (
+                                                    <div>
+                                                      <h6 className="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
+                                                        <div className={`w-3 h-3 ${colors.icon.replace('text-', 'bg-').replace('-500', '-300')} rounded-full`}></div>
+                                                        Secondary Muscles
+                                                      </h6>
+                                                      <div className="flex flex-wrap gap-2">
+                                                        {activation.secondary.map((muscle, idx) => (
+                                                          <span key={idx} className={`px-3 py-1.5 ${colors.icon.replace('text-', 'bg-').replace('-500', '-200')} ${colors.icon.replace('-500', '-800')} text-xs sm:text-sm font-medium rounded-full shadow-sm`}>
+                                                            {muscle}
+                                                          </span>
+                                                        ))}
+                                                      </div>
+                                                    </div>
+                                                  )}
+                                                </div>
+                                              </div>
+                                            </div>
+                                          )
+                                        })()}
+                                      </div>
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            )
-                          })}
-                      </CardContent>
-                    </Card>
-                  ))}
+                              )
+                            })}
+                        </CardContent>
+                      </Card>
+                    )
+                  })}
                 </div>
               </TabsContent>
             ))}
           </Tabs>
 
-          <Card className="mt-10 bg-white shadow-[20px_20px_60px_#bebebe,-20px_-20px_60px_#ffffff] border-0 rounded-3xl">
-            <CardHeader>
-              <CardTitle className="text-gray-800 text-2xl font-bold">Today's Progress</CardTitle>
+          <Card className="mt-6 sm:mt-10 bg-white shadow-[20px_20px_60px_#bebebe,-20px_-20px_60px_#ffffff] border-0 rounded-3xl">
+            <CardHeader className="px-4 sm:px-6">
+              <CardTitle className="relative">
+                <div className="flex items-center gap-3 sm:gap-4 p-4 sm:p-6 bg-gradient-to-r from-green-400 via-teal-500 to-cyan-500 rounded-2xl shadow-[inset_8px_8px_16px_rgba(255,255,255,0.3),inset_-8px_-8px_16px_rgba(0,0,0,0.1)] text-white">
+                  <div className="p-2 sm:p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                    <CheckCircle2 className="h-5 w-5 sm:h-7 sm:w-7 text-white drop-shadow-sm" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg sm:text-2xl font-bold tracking-wide drop-shadow-sm">Today's Progress</h2>
+                    <p className="text-xs sm:text-sm text-white/80 font-medium mt-1">Track your achievements</p>
+                  </div>
+                </div>
+              </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <span className="text-gray-700 text-xl font-semibold">
+            <CardContent className="px-4 sm:px-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <span className="text-gray-700 text-lg sm:text-xl font-semibold">
                   Completed: {completedExercises.size} exercises
                 </span>
                 <Button
                   onClick={() => setCompletedExercises(new Set())}
                   variant="outline"
                   size="lg"
-                  className="bg-yellow-100 border-0 text-yellow-700 font-semibold px-6 py-3 rounded-2xl select-none shadow-[20px_20px_60px_#d4af37,-8px_-20px_60px_#ffeb3b] hover:shadow-[inset_8px_8px_16px_#d4af37,inset_-8px_-8px_16px_#ffeb3b] hover:bg-yellow-200 transition-all duration-300"
+                  className="bg-yellow-100 border-0 text-yellow-700 font-semibold px-4 sm:px-6 py-2 sm:py-3 rounded-2xl select-none shadow-[20px_20px_60px_#d4af37,-8px_-20px_60px_#ffeb3b] hover:shadow-[inset_8px_8px_16px_#d4af37,inset_-8px_-8px_16px_#ffeb3b] hover:bg-yellow-200 transition-all duration-300 text-sm sm:text-base"
                 >
                   Reset Progress
                 </Button>

@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="1024" viewBox="0 0 512 1024">
+  <!-- Base anatomy from your detailed SVG -->
+  <image href="/front-muscles-detailed.svg" width="512" height="1024" opacity="0.3"/>
+  
+  <!-- Anatomically labeled muscle groups -->
+  
+  <!-- Chest muscles -->
+  <g id="pectorals" class="muscle-group">
+    <path d="M200 280 L312 280 L312 360 L200 360 Z" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <g id="upper-pectorals" class="muscle-group">
+    <path d="M200 260 L312 260 L312 300 L200 300 Z" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <g id="middle-pectorals" class="muscle-group">
+    <path d="M200 280 L312 280 L312 320 L200 320 Z" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <g id="lower-pectorals" class="muscle-group">
+    <path d="M200 320 L312 320 L312 360 L200 360 Z" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <g id="inner-pectorals" class="muscle-group">
+    <path d="M230 280 L282 280 L282 360 L230 360 Z" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <!-- Shoulder muscles -->
+  <g id="anterior-deltoids" class="muscle-group">
+    <ellipse cx="165" cy="270" rx="25" ry="30" fill="transparent" stroke="transparent" stroke-width="2"/>
+    <ellipse cx="347" cy="270" rx="25" ry="30" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <g id="medial-deltoids" class="muscle-group">
+    <ellipse cx="145" cy="250" rx="25" ry="25" fill="transparent" stroke="transparent" stroke-width="2"/>
+    <ellipse cx="367" cy="250" rx="25" ry="25" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <g id="deltoids" class="muscle-group">
+    <ellipse cx="145" cy="250" rx="35" ry="40" fill="transparent" stroke="transparent" stroke-width="2"/>
+    <ellipse cx="367" cy="250" rx="35" ry="40" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <!-- Arm muscles -->
+  <g id="biceps" class="muscle-group">
+    <ellipse cx="105" cy="340" rx="20" ry="50" fill="transparent" stroke="transparent" stroke-width="2"/>
+    <ellipse cx="407" cy="340" rx="20" ry="50" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <g id="biceps-brachii" class="muscle-group">
+    <ellipse cx="105" cy="340" rx="20" ry="50" fill="transparent" stroke="transparent" stroke-width="2"/>
+    <ellipse cx="407" cy="340" rx="20" ry="50" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <g id="biceps-long-head" class="muscle-group">
+    <ellipse cx="100" cy="340" rx="15" ry="45" fill="transparent" stroke="transparent" stroke-width="2"/>
+    <ellipse cx="412" cy="340" rx="15" ry="45" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <g id="biceps-short-head" class="muscle-group">
+    <ellipse cx="110" cy="350" rx="15" ry="40" fill="transparent" stroke="transparent" stroke-width="2"/>
+    <ellipse cx="402" cy="350" rx="15" ry="40" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <g id="brachialis" class="muscle-group">
+    <ellipse cx="105" cy="400" rx="20" ry="25" fill="transparent" stroke="transparent" stroke-width="2"/>
+    <ellipse cx="407" cy="400" rx="20" ry="25" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <g id="brachioradialis" class="muscle-group">
+    <ellipse cx="110" cy="430" rx="15" ry="40" fill="transparent" stroke="transparent" stroke-width="2"/>
+    <ellipse cx="402" cy="430" rx="15" ry="40" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <!-- Core muscles -->
+  <g id="rectus-abdominis" class="muscle-group">
+    <path d="M220 400 L292 400 L292 520 L220 520 Z" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <g id="lower-rectus-abdominis" class="muscle-group">
+    <path d="M220 480 L292 480 L292 520 L220 520 Z" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <g id="obliques" class="muscle-group">
+    <ellipse cx="180" cy="460" rx="25" ry="50" fill="transparent" stroke="transparent" stroke-width="2"/>
+    <ellipse cx="332" cy="460" rx="25" ry="50" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <g id="transverse-abdominis" class="muscle-group">
+    <path d="M180 400 L332 400 L332 520 L180 520 Z" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <g id="serratus-anterior" class="muscle-group">
+    <ellipse cx="180" cy="380" rx="20" ry="40" fill="transparent" stroke="transparent" stroke-width="2"/>
+    <ellipse cx="332" cy="380" rx="20" ry="40" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <!-- Leg muscles -->
+  <g id="quadriceps" class="muscle-group">
+    <ellipse cx="220" cy="640" rx="30" ry="60" fill="transparent" stroke="transparent" stroke-width="2"/>
+    <ellipse cx="292" cy="640" rx="30" ry="60" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <g id="hip-flexors" class="muscle-group">
+    <path d="M220 540 L292 540 L292 580 L220 580 Z" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <g id="calves" class="muscle-group">
+    <ellipse cx="220" cy="780" rx="20" ry="40" fill="transparent" stroke="transparent" stroke-width="2"/>
+    <ellipse cx="292" cy="780" rx="20" ry="40" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <g id="soleus" class="muscle-group">
+    <ellipse cx="220" cy="800" rx="20" ry="20" fill="transparent" stroke="transparent" stroke-width="2"/>
+    <ellipse cx="292" cy="800" rx="20" ry="20" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <!-- Full body -->
+  <g id="full-body" class="muscle-group">
+    <path d="M100 160 L412 160 L412 800 L100 800 Z" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <g id="core" class="muscle-group">
+    <path d="M180 400 L332 400 L332 520 L180 520 Z" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+</svg>

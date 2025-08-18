@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="1024" viewBox="0 0 512 1024">
+  <!-- Base anatomy from your detailed SVG -->
+  <image href="/back-muscles-detailed.svg" width="512" height="1024" opacity="0.3"/>
+  
+  <!-- Anatomically labeled muscle groups -->
+  
+  <!-- Back muscles -->
+  <g id="latissimus-dorsi" class="muscle-group">
+    <ellipse cx="180" cy="380" rx="45" ry="70" fill="transparent" stroke="transparent" stroke-width="2"/>
+    <ellipse cx="332" cy="380" rx="45" ry="70" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <g id="lower-latissimus-dorsi" class="muscle-group">
+    <ellipse cx="180" cy="420" rx="45" ry="40" fill="transparent" stroke="transparent" stroke-width="2"/>
+    <ellipse cx="332" cy="420" rx="45" ry="40" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <g id="rhomboids" class="muscle-group">
+    <path d="M210 280 L302 280 L302 340 L210 340 Z" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <g id="middle-trapezius" class="muscle-group">
+    <path d="M180 200 L332 200 L332 280 L180 280 Z" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <g id="upper-trapezius" class="muscle-group">
+    <path d="M210 160 L302 160 L302 220 L210 220 Z" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <g id="teres-major" class="muscle-group">
+    <ellipse cx="160" cy="320" rx="25" ry="20" fill="transparent" stroke="transparent" stroke-width="2"/>
+    <ellipse cx="352" cy="320" rx="25" ry="20" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <g id="posterior-deltoids" class="muscle-group">
+    <ellipse cx="130" cy="270" rx="25" ry="30" fill="transparent" stroke="transparent" stroke-width="2"/>
+    <ellipse cx="382" cy="270" rx="25" ry="30" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <g id="rear-deltoids" class="muscle-group">
+    <ellipse cx="130" cy="270" rx="25" ry="30" fill="transparent" stroke="transparent" stroke-width="2"/>
+    <ellipse cx="382" cy="270" rx="25" ry="30" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <g id="erector-spinae" class="muscle-group">
+    <path d="M240 350 L272 350 L272 550 L240 550 Z" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <!-- Arm muscles (back view) -->
+  <g id="triceps" class="muscle-group">
+    <ellipse cx="105" cy="340" rx="20" ry="50" fill="transparent" stroke="transparent" stroke-width="2"/>
+    <ellipse cx="407" cy="340" rx="20" ry="50" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <g id="triceps-long-head" class="muscle-group">
+    <ellipse cx="105" cy="340" rx="20" ry="40" fill="transparent" stroke="transparent" stroke-width="2"/>
+    <ellipse cx="407" cy="340" rx="20" ry="40" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <g id="triceps-lateral-head" class="muscle-group">
+    <ellipse cx="110" cy="360" rx="15" ry="30" fill="transparent" stroke="transparent" stroke-width="2"/>
+    <ellipse cx="402" cy="360" rx="15" ry="30" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <!-- Leg muscles (back view) -->
+  <g id="hamstrings" class="muscle-group">
+    <ellipse cx="220" cy="660" rx="30" ry="50" fill="transparent" stroke="transparent" stroke-width="2"/>
+    <ellipse cx="292" cy="660" rx="30" ry="50" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <g id="glutes" class="muscle-group">
+    <path d="M180 520 L332 520 L332 600 L180 600 Z" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <g id="calves-back" class="muscle-group">
+    <ellipse cx="220" cy="780" rx="20" ry="40" fill="transparent" stroke="transparent" stroke-width="2"/>
+    <ellipse cx="292" cy="780" rx="20" ry="40" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <g id="soleus-back" class="muscle-group">
+    <ellipse cx="220" cy="800" rx="20" ry="20" fill="transparent" stroke="transparent" stroke-width="2"/>
+    <ellipse cx="292" cy="800" rx="20" ry="20" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <!-- Shoulder muscles (back view) -->
+  <g id="medial-deltoids-back" class="muscle-group">
+    <ellipse cx="145" cy="250" rx="25" ry="25" fill="transparent" stroke="transparent" stroke-width="2"/>
+    <ellipse cx="367" cy="250" rx="25" ry="25" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+  
+  <g id="deltoids-back" class="muscle-group">
+    <ellipse cx="145" cy="250" rx="35" ry="40" fill="transparent" stroke="transparent" stroke-width="2"/>
+    <ellipse cx="367" cy="250" rx="35" ry="40" fill="transparent" stroke="transparent" stroke-width="2"/>
+  </g>
+</svg>
