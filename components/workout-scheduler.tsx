@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { CheckCircle2, Clock, Dumbbell, Target, EyeOff, Zap } from "lucide-react"
+import { CheckCircle2, Clock, Dumbbell, Target, EyeOff, Zap, ChevronDown, ChevronUp } from "lucide-react"
 import { ParticlesBackground } from "./particles-background"
 import { LazyVideo } from "./lazy-video"
 
@@ -627,6 +627,7 @@ function WorkoutScheduler() {
   const [completedExercises, setCompletedExercises] = useState<Set<string>>(new Set())
   const [activeDay, setActiveDay] = useState("Warmup")
   const [hiddenVideos, setHiddenVideos] = useState<Set<string>>(new Set())
+  const [isMuscleActivationOpen, setIsMuscleActivationOpen] = useState(false)
   const tabsScrollRef = useRef<HTMLDivElement>(null)
 
   const getMuscleGroupColors = (muscle: string) => {
@@ -1215,56 +1216,70 @@ function WorkoutScheduler() {
                               )}
                             </div>
                             <div className="mt-6 pt-6 border-t-2 border-gray-200 select-none">
-                              <div className="flex items-center gap-3 mb-4 select-none">
-                                <Target className="h-6 w-6 text-orange-600" />
-                                <h5 className="text-lg sm:text-xl font-bold text-gray-800">Muscle Activation</h5>
-                              </div>
-                              {(() => {
-                                const activation = getMuscleActivation(exercise.name, exercise.targetMuscle)
-                                return (
-                                  <div className="bg-gradient-to-br from-orange-50 to-red-50 p-4 sm:p-6 rounded-2xl shadow-[inset_12px_12px_24px_rgba(251,146,60,0.1),inset_-12px_-12px_24px_rgba(255,255,255,0.8)] border border-orange-100">
-                                    <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
-                                      <div>
-                                        <MuscleIllustration
-                                          primaryMuscles={activation.primary}
-                                          secondaryMuscles={activation.secondary}
-                                          colors={{ icon: "text-orange-500" }}
-                                        />
-                                      </div>
-                                      <div className="space-y-4">
+                              <Button
+                                variant="ghost"
+                                onClick={() => setIsMuscleActivationOpen(!isMuscleActivationOpen)}
+                                className="w-full justify-between p-0 h-auto hover:bg-transparent"
+                              >
+                                <div className="flex items-center gap-3 mb-4 select-none">
+                                  <Target className="h-6 w-6 text-orange-600" />
+                                  <h5 className="text-lg sm:text-xl font-bold text-gray-800">Muscle Activation</h5>
+                                </div>
+                                {isMuscleActivationOpen ? (
+                                  <ChevronUp className="h-5 w-5 text-gray-600" />
+                                ) : (
+                                  <ChevronDown className="h-5 w-5 text-gray-600" />
+                                )}
+                              </Button>
+                              
+                              {isMuscleActivationOpen && (
+                                (() => {
+                                  const activation = getMuscleActivation(exercise.name, exercise.targetMuscle)
+                                  return (
+                                    <div className="bg-gradient-to-br from-orange-50 to-red-50 p-4 sm:p-6 rounded-2xl shadow-[inset_12px_12px_24px_rgba(251,146,60,0.1),inset_-12px_-12px_24px_rgba(255,255,255,0.8)] border border-orange-100">
+                                      <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
                                         <div>
-                                          <h6 className="text-sm font-bold text-orange-800 mb-3 flex items-center gap-2">
-                                            <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
-                                            Primary Muscles
-                                          </h6>
-                                          <div className="flex flex-wrap gap-2">
-                                            {activation.primary.map((muscle, idx) => (
-                                              <span key={idx} className="px-3 py-1.5 bg-orange-500 text-white text-xs sm:text-sm font-semibold rounded-full shadow-sm">
-                                                {muscle}
-                                              </span>
-                                            ))}
-                                          </div>
+                                          <MuscleIllustration
+                                            primaryMuscles={activation.primary}
+                                            secondaryMuscles={activation.secondary}
+                                            colors={{ icon: "text-orange-500" }}
+                                          />
                                         </div>
-                                        {activation.secondary.length > 0 && (
+                                        <div className="space-y-4">
                                           <div>
-                                            <h6 className="text-sm font-bold text-orange-700 mb-3 flex items-center gap-2">
-                                              <div className="w-3 h-3 bg-orange-300 rounded-full"></div>
-                                              Secondary Muscles
+                                            <h6 className="text-sm font-bold text-orange-800 mb-3 flex items-center gap-2">
+                                              <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
+                                              Primary Muscles
                                             </h6>
                                             <div className="flex flex-wrap gap-2">
-                                              {activation.secondary.map((muscle, idx) => (
-                                                <span key={idx} className="px-3 py-1.5 bg-orange-200 text-orange-800 text-xs sm:text-sm font-medium rounded-full shadow-sm">
+                                              {activation.primary.map((muscle, idx) => (
+                                                <span key={idx} className="px-3 py-1.5 bg-orange-500 text-white text-xs sm:text-sm font-semibold rounded-full shadow-sm">
                                                   {muscle}
                                                 </span>
                                               ))}
                                             </div>
                                           </div>
-                                        )}
+                                          {activation.secondary.length > 0 && (
+                                            <div>
+                                              <h6 className="text-sm font-bold text-orange-700 mb-3 flex items-center gap-2">
+                                                <div className="w-3 h-3 bg-orange-300 rounded-full"></div>
+                                                Secondary Muscles
+                                              </h6>
+                                              <div className="flex flex-wrap gap-2">
+                                                {activation.secondary.map((muscle, idx) => (
+                                                  <span key={idx} className="px-3 py-1.5 bg-orange-200 text-orange-800 text-xs sm:text-sm font-medium rounded-full shadow-sm">
+                                                    {muscle}
+                                                  </span>
+                                                ))}
+                                              </div>
+                                            </div>
+                                          )}
+                                        </div>
                                       </div>
                                     </div>
-                                  </div>
-                                )
-                              })()}
+                                  )
+                                })()
+                              )}
                             </div>
                           </div>
                         </div>
@@ -1372,57 +1387,71 @@ function WorkoutScheduler() {
                                         )}
                                       </div>
                                       <div className="mt-6 pt-6 border-t-2 border-gray-200 select-none">
-                                        <div className="flex items-center gap-3 mb-4 select-none">
-                                          <Target className={`h-6 w-6 ${colors.icon.replace('-500', '-600')}`} />
-                                          <h5 className="text-lg sm:text-xl font-bold text-gray-800">Muscle Activation</h5>
-                                        </div>
-                                        {(() => {
-                                          const activation = getMuscleActivation(exercise.name, exercise.targetMuscle)
-                                          const primaryColor = colors.icon.replace('text-', '').replace('-500', '')
-                                          return (
-                                            <div className="bg-white/50 backdrop-blur-sm p-4 sm:p-6 rounded-2xl shadow-[inset_8px_8px_16px_rgba(0,0,0,0.05),inset_-8px_-8px_16px_rgba(255,255,255,0.8)] border border-gray-200">
-                                              <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
-                                                <div>
-                                                  <MuscleIllustration
-                                                    primaryMuscles={activation.primary}
-                                                    secondaryMuscles={activation.secondary}
-                                                    colors={colors}
-                                                  />
-                                                </div>
-                                                <div className="space-y-4">
+                                        <Button
+                                          variant="ghost"
+                                          onClick={() => setIsMuscleActivationOpen(!isMuscleActivationOpen)}
+                                          className="w-full justify-between p-0 h-auto hover:bg-transparent"
+                                        >
+                                          <div className="flex items-center gap-3 mb-4 select-none">
+                                            <Target className={`h-6 w-6 ${colors.icon.replace('-500', '-600')}`} />
+                                            <h5 className="text-lg sm:text-xl font-bold text-gray-800">Muscle Activation</h5>
+                                          </div>
+                                          {isMuscleActivationOpen ? (
+                                            <ChevronUp className="h-5 w-5 text-gray-600" />
+                                          ) : (
+                                            <ChevronDown className="h-5 w-5 text-gray-600" />
+                                          )}
+                                        </Button>
+                                        
+                                        {isMuscleActivationOpen && (
+                                          (() => {
+                                            const activation = getMuscleActivation(exercise.name, exercise.targetMuscle)
+                                            const primaryColor = colors.icon.replace('text-', '').replace('-500', '')
+                                            return (
+                                              <div className="bg-white/50 backdrop-blur-sm p-4 sm:p-6 rounded-2xl shadow-[inset_8px_8px_16px_rgba(0,0,0,0.05),inset_-8px_-8px_16px_rgba(255,255,255,0.8)] border border-gray-200">
+                                                <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
                                                   <div>
-                                                    <h6 className="text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
-                                                      <div className={`w-3 h-3 ${colors.icon.replace('text-', 'bg-')} rounded-full`}></div>
-                                                      Primary Muscles
-                                                    </h6>
-                                                    <div className="flex flex-wrap gap-2">
-                                                      {activation.primary.map((muscle, idx) => (
-                                                        <span key={idx} className={`px-3 py-1.5 ${colors.icon.replace('text-', 'bg-')} text-white text-xs sm:text-sm font-semibold rounded-full shadow-sm`}>
-                                                          {muscle}
-                                                        </span>
-                                                      ))}
-                                                    </div>
+                                                    <MuscleIllustration
+                                                      primaryMuscles={activation.primary}
+                                                      secondaryMuscles={activation.secondary}
+                                                      colors={colors}
+                                                    />
                                                   </div>
-                                                  {activation.secondary.length > 0 && (
+                                                  <div className="space-y-4">
                                                     <div>
-                                                      <h6 className="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
-                                                        <div className={`w-3 h-3 ${colors.icon.replace('text-', 'bg-').replace('-500', '-300')} rounded-full`}></div>
-                                                        Secondary Muscles
+                                                      <h6 className="text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
+                                                        <div className={`w-3 h-3 ${colors.icon.replace('text-', 'bg-')} rounded-full`}></div>
+                                                        Primary Muscles
                                                       </h6>
                                                       <div className="flex flex-wrap gap-2">
-                                                        {activation.secondary.map((muscle, idx) => (
-                                                          <span key={idx} className={`px-3 py-1.5 ${colors.icon.replace('text-', 'bg-').replace('-500', '-200')} ${colors.icon.replace('-500', '-800')} text-xs sm:text-sm font-medium rounded-full shadow-sm`}>
+                                                        {activation.primary.map((muscle, idx) => (
+                                                          <span key={idx} className={`px-3 py-1.5 ${colors.icon.replace('text-', 'bg-')} text-white text-xs sm:text-sm font-semibold rounded-full shadow-sm`}>
                                                             {muscle}
                                                           </span>
                                                         ))}
                                                       </div>
                                                     </div>
-                                                  )}
+                                                    {activation.secondary.length > 0 && (
+                                                      <div>
+                                                        <h6 className="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
+                                                          <div className={`w-3 h-3 ${colors.icon.replace('text-', 'bg-').replace('-500', '-300')} rounded-full`}></div>
+                                                          Secondary Muscles
+                                                        </h6>
+                                                        <div className="flex flex-wrap gap-2">
+                                                          {activation.secondary.map((muscle, idx) => (
+                                                            <span key={idx} className={`px-3 py-1.5 ${colors.icon.replace('text-', 'bg-').replace('-500', '-200')} ${colors.icon.replace('-500', '-800')} text-xs sm:text-sm font-medium rounded-full shadow-sm`}>
+                                                              {muscle}
+                                                            </span>
+                                                          ))}
+                                                        </div>
+                                                      </div>
+                                                    )}
+                                                  </div>
                                                 </div>
                                               </div>
-                                            </div>
-                                          )
-                                        })()}
+                                            )
+                                          })()
+                                        )}
                                       </div>
                                     </div>
                                   </div>
