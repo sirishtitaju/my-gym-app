@@ -673,36 +673,6 @@ function WorkoutScheduler() {
     }
   }
 
-  const getHighlightedDays = () => {
-    const highlightedDays = new Set<string>()
-
-    if (activeDay === "Warmup") {
-      // Warmup: All workout days
-      highlightedDays.add("Sunday")
-      highlightedDays.add("Monday")
-      highlightedDays.add("Tuesday")
-      highlightedDays.add("Wednesday")
-      highlightedDays.add("Thursday")
-      highlightedDays.add("Friday")
-    } else if (activeDay === "Sunday") {
-      // Chest & Triceps: Sunday and Wednesday
-      highlightedDays.add("Sunday")
-      highlightedDays.add("Wednesday")
-    } else if (activeDay === "Monday") {
-      // Back & Biceps: Monday and Thursday
-      highlightedDays.add("Monday")
-      highlightedDays.add("Thursday")
-    } else if (activeDay === "Tuesday") {
-      // Shoulders & Abs: Tuesday only
-      highlightedDays.add("Tuesday")
-    } else if (activeDay === "Friday") {
-      // Shoulders & Legs: Friday only
-      highlightedDays.add("Friday")
-    }
-
-    return highlightedDays
-  }
-
   return (
     <div className="relative">
       <ParticlesBackground />
@@ -717,66 +687,55 @@ function WorkoutScheduler() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-7 gap-4">
-                {getWeekSchedule().map((item, index) => {
-                  const highlightedDays = getHighlightedDays()
-                  const isHighlighted = highlightedDays.has(item.day)
-
-                  return (
-                    <div
-                      key={index}
-                      className={`p-5 rounded-2xl text-center transition-all duration-300 select-none ${
-                        item.workout
-                          ? `bg-gray-100 text-gray-800 cursor-pointer hover:scale-105 ${
-                              isHighlighted
-                                ? "shadow-[inset_12px_12px_20px_#d4af37,inset_-12px_-12px_20px_#ffeb3b] bg-yellow-100 border-2 border-yellow-300"
-                                : "shadow-[inset_8px_8px_16px_#bebebe,inset_-8px_-8px_16px_#ffffff] hover:shadow-[inset_12px_12px_20px_#bebebe,inset_-12px_-12px_20px_#ffffff] hover:bg-yellow-50"
-                            }`
-                          : "bg-gray-50 text-gray-400 border-2 border-dashed border-gray-300 shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff]"
-                      }`}
-                      onClick={() => item.workout && setActiveDay(mapDayToWorkout(item.day))}
-                    >
-                      <div className={`font-bold text-base mb-2 ${isHighlighted ? "text-yellow-800" : ""}`}>
-                        {item.day}
-                      </div>
-                      <div className={`text-sm opacity-90 font-medium ${isHighlighted ? "text-yellow-700" : ""}`}>
-                        {item.workout ? item.workout.muscles.join(" & ") : "Rest Day"}
-                      </div>
+                {getWeekSchedule().map((item, index) => (
+                  <div
+                    key={index}
+                    className={`p-5 rounded-2xl text-center transition-all duration-300 select-none ${
+                      item.workout
+                        ? "bg-gray-100 text-gray-800 cursor-pointer hover:scale-105 shadow-[inset_8px_8px_16px_#bebebe,inset_-8px_-8px_16px_#ffffff] hover:shadow-[inset_12px_12px_20px_#bebebe,inset_-12px_-12px_20px_#ffffff] hover:bg-yellow-50"
+                        : "bg-gray-50 text-gray-400 border-2 border-dashed border-gray-300 shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff]"
+                    }`}
+                    onClick={() => item.workout && setActiveDay(mapDayToWorkout(item.day))}
+                  >
+                    <div className="font-bold text-base mb-2">{item.day}</div>
+                    <div className="text-sm opacity-90 font-medium">
+                      {item.workout ? item.workout.muscles.join(" & ") : "Rest Day"}
                     </div>
-                  )
-                })}
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>
 
           <Tabs value={activeDay} onValueChange={setActiveDay}>
-            <TabsList className="flex w-full mb-10 bg-gray-100 p-2 sm:p-4 rounded-3xl shadow-[20px_20px_60px_#bebebe,-20px_-20px_60px_#ffffff] border-0 select-none gap-3 overflow-x-auto scrollbar-hide">
+            <TabsList className="grid w-full grid-cols-5 mb-10 bg-gray-100 p-4 rounded-3xl shadow-[20px_20px_60px_#bebebe,-20px_-20px_60px_#ffffff] border-0 select-none gap-3">
               <TabsTrigger
                 value="Warmup"
-                className="data-[state=active]:bg-yellow-400 data-[state=active]:text-white data-[state=active]:shadow-[inset_8px_8px_16px_#d4af37,inset_-8px_-8px_16px_#ffeb3b] rounded-2xl font-semibold text-gray-700 transition-all duration-200 select-none shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff] hover:shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff] py-3 px-4 text-sm whitespace-nowrap flex-shrink-0 min-w-fit"
+                className="data-[state=active]:bg-yellow-400 data-[state=active]:text-white data-[state=active]:shadow-[inset_8px_8px_16px_#d4af37,inset_-8px_-8px_16px_#ffeb3b] rounded-2xl font-semibold text-gray-700 transition-all duration-200 select-none shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff] hover:shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff] py-4 px-3 text-sm"
               >
                 Warmup
               </TabsTrigger>
               <TabsTrigger
                 value="Sunday"
-                className="data-[state=active]:bg-yellow-400 data-[state=active]:text-white data-[state=active]:shadow-[inset_8px_8px_16px_#d4af37,inset_-8px_-8px_16px_#ffeb3b] rounded-2xl font-semibold text-gray-700 transition-all duration-200 select-none shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff] hover:shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff] py-3 px-4 text-sm whitespace-nowrap flex-shrink-0 min-w-fit"
+                className="data-[state=active]:bg-yellow-400 data-[state=active]:text-white data-[state=active]:shadow-[inset_8px_8px_16px_#d4af37,inset_-8px_-8px_16px_#ffeb3b] rounded-2xl font-semibold text-gray-700 transition-all duration-200 select-none shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff] hover:shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff] py-4 px-3 text-sm"
               >
                 Chest & Triceps
               </TabsTrigger>
               <TabsTrigger
                 value="Monday"
-                className="data-[state=active]:bg-yellow-400 data-[state=active]:text-white data-[state=active]:shadow-[inset_8px_8px_16px_#d4af37,inset_-8px_-8px_16px_#ffeb3b] rounded-2xl font-semibold text-gray-700 transition-all duration-200 select-none shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff] hover:shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff] py-3 px-4 text-sm whitespace-nowrap flex-shrink-0 min-w-fit"
+                className="data-[state=active]:bg-yellow-400 data-[state=active]:text-white data-[state=active]:shadow-[inset_8px_8px_16px_#d4af37,inset_-8px_-8px_16px_#ffeb3b] rounded-2xl font-semibold text-gray-700 transition-all duration-200 select-none shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff] hover:shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff] py-4 px-3 text-sm"
               >
                 Back & Biceps
               </TabsTrigger>
               <TabsTrigger
                 value="Tuesday"
-                className="data-[state=active]:bg-yellow-400 data-[state=active]:text-white data-[state=active]:shadow-[inset_8px_8px_16px_#d4af37,inset_-8px_-8px_16px_#ffeb3b] rounded-2xl font-semibold text-gray-700 transition-all duration-200 select-none shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff] hover:shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff] py-3 px-4 text-sm whitespace-nowrap flex-shrink-0 min-w-fit"
+                className="data-[state=active]:bg-yellow-400 data-[state=active]:text-white data-[state=active]:shadow-[inset_8px_8px_16px_#d4af37,inset_-8px_-8px_16px_#ffeb3b] rounded-2xl font-semibold text-gray-700 transition-all duration-200 select-none shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff] hover:shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff] py-4 px-3 text-sm"
               >
                 Shoulders & Abs
               </TabsTrigger>
               <TabsTrigger
                 value="Friday"
-                className="data-[state=active]:bg-yellow-400 data-[state=active]:text-white data-[state=active]:shadow-[inset_8px_8px_16px_#d4af37,inset_-8px_-8px_16px_#ffeb3b] rounded-2xl font-semibold text-gray-700 transition-all duration-200 select-none shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff] hover:shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff] py-3 px-4 text-sm whitespace-nowrap flex-shrink-0 min-w-fit"
+                className="data-[state=active]:bg-yellow-400 data-[state=active]:text-white data-[state=active]:shadow-[inset_8px_8px_16px_#d4af37,inset_-8px_-8px_16px_#ffeb3b] rounded-2xl font-semibold text-gray-700 transition-all duration-200 select-none shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff] hover:shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff] py-4 px-3 text-sm"
               >
                 Shoulders & Legs
               </TabsTrigger>
@@ -790,104 +749,99 @@ function WorkoutScheduler() {
                     Warmup Exercises - Prepare Your Body
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {warmupExercises.map((exercise, exerciseIndex) => {
-                      const isCompleted = completedExercises.has(`warmup-${exerciseIndex}`)
-                      const exerciseKey = `warmup-${exerciseIndex}`
-                      const isVideoHidden = hiddenVideos.has(exerciseKey)
+                <CardContent className="space-y-8">
+                  {warmupExercises.map((exercise, exerciseIndex) => {
+                    const isCompleted = completedExercises.has(`warmup-${exerciseIndex}`)
+                    const exerciseKey = `warmup-${exerciseIndex}`
+                    const isVideoHidden = hiddenVideos.has(exerciseKey)
 
-                      return (
-                        <div
-                          key={exerciseIndex}
-                          className={`p-6 rounded-3xl transition-all duration-300 cursor-pointer select-none ${
-                            isCompleted
-                              ? "bg-yellow-50 shadow-[inset_20px_20px_60px_#e6d700,inset_-20px_-20px_60px_#ffff00] border-2 border-yellow-200"
-                              : "bg-gray-50 shadow-[20px_20px_60px_#bebebe,-20px_-20px_60px_#ffffff] hover:shadow-[inset_8px_8px_16px_#bebebe,inset_-8px_-8px_16px_#ffffff] hover:bg-gray-100"
-                          }`}
-                          onClick={() => {
-                            const key = `warmup-${exerciseIndex}`
-                            const newCompleted = new Set(completedExercises)
-                            if (newCompleted.has(key)) {
-                              newCompleted.delete(key)
-                            } else {
-                              newCompleted.add(key)
-                            }
-                            setCompletedExercises(newCompleted)
-                          }}
-                        >
-                          <div className="flex items-start justify-between mb-4">
-                            <h4 className="font-bold text-gray-800 text-lg">{exercise.name}</h4>
-                            <div className="flex items-center gap-2">
-                              {isCompleted && <CheckCircle2 className="h-5 w-5 text-yellow-500" />}
+                    return (
+                      <div
+                        key={exerciseIndex}
+                        className={`p-8 rounded-3xl transition-all duration-300 cursor-pointer select-none ${
+                          isCompleted
+                            ? "bg-yellow-50 shadow-[inset_20px_20px_60px_#e6d700,inset_-20px_-20px_60px_#ffff00] border-2 border-yellow-200"
+                            : "bg-gray-50 shadow-[20px_20px_60px_#bebebe,-20px_-20px_60px_#ffffff] hover:shadow-[inset_8px_8px_16px_#bebebe,inset_-8px_-8px_16px_#ffffff] hover:bg-gray-100"
+                        }`}
+                        onClick={() => {
+                          const key = `warmup-${exerciseIndex}`
+                          const newCompleted = new Set(completedExercises)
+                          if (newCompleted.has(key)) {
+                            newCompleted.delete(key)
+                          } else {
+                            newCompleted.add(key)
+                          }
+                          setCompletedExercises(newCompleted)
+                        }}
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-4 mb-6 select-none">
+                              <h4 className="font-bold text-gray-800 text-2xl">{exercise.name}</h4>
+                              {isCompleted && <CheckCircle2 className="h-7 w-7 text-yellow-500" />}
                               <Button
                                 size="sm"
                                 variant="ghost"
-                                className="h-8 w-8 p-0 text-gray-600 hover:text-gray-800 rounded-xl select-none shadow-[4px_4px_8px_#bebebe,-4px_-4px_8px_#ffffff] hover:shadow-[inset_2px_2px_4px_#bebebe,inset_-4px_-4px_4px_#ffffff] bg-gray-100"
+                                className="h-10 w-10 p-0 text-gray-600 hover:text-gray-800 ml-auto rounded-2xl select-none shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff] hover:shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff] bg-gray-100"
                                 onClick={(e) => toggleVideo(exerciseKey, e)}
                                 title={isVideoHidden ? "Show video" : "Hide video"}
                               >
-                                <EyeOff className="h-4 w-4" />
+                                <EyeOff className="h-5 w-5" />
                               </Button>
                             </div>
-                          </div>
-
-                          {!isVideoHidden && (
-                            <div className="mb-4">
-                              <LazyVideo videoUrl={exercise.videoUrl} title={`${exercise.name} demonstration`} />
-                            </div>
-                          )}
-
-                          <div className="space-y-4">
-                            <div className="flex items-center gap-2 select-none">
-                              <Dumbbell className="h-4 w-4 text-gray-600" />
-                              <span className="text-sm text-gray-700 font-semibold">{exercise.equipment}</span>
-                            </div>
-
-                            <div className="flex gap-2 flex-wrap select-none">
-                              <Badge
-                                variant="outline"
-                                className="text-xs bg-gray-100 text-gray-700 border-0 px-2 py-1 font-semibold select-none shadow-[4px_4px_8px_#bebebe,-4px_-4px_8px_#ffffff] rounded-xl"
-                              >
-                                {exercise.sets} sets
-                              </Badge>
-                              <Badge
-                                variant="outline"
-                                className="text-xs bg-yellow-100 text-yellow-700 border-0 px-2 py-1 font-semibold select-none shadow-[4px_4px_8px_#d4af37,-4px_-4px_8px_#ffeb3b] rounded-xl"
-                              >
-                                {exercise.reps} reps
-                              </Badge>
-                            </div>
-
-                            {exercise.notes && (
-                              <div className="bg-yellow-50 p-3 rounded-2xl shadow-[inset_8px_8px_16px_#e6d700,inset_-8px_-8px_16px_#ffff00] border border-yellow-200 select-none">
-                                <div className="flex items-start gap-2 select-none">
-                                  <Target className="h-4 w-4 text-yellow-600 mt-0.5 flex-shrink-0" />
-                                  <p className="text-sm font-bold text-gray-800 leading-relaxed">{exercise.notes}</p>
-                                </div>
+                            {!isVideoHidden && (
+                              <div className="mb-8">
+                                <LazyVideo videoUrl={exercise.videoUrl} title={`${exercise.name} demonstration`} />
                               </div>
                             )}
-
-                            {exercise.muscleIllustration && (
-                              <div className="mt-4 pt-4 border-t border-gray-200 select-none">
-                                <div className="flex items-center gap-2 mb-3 select-none">
-                                  <Target className="h-4 w-4 text-yellow-600" />
-                                  <h5 className="text-sm font-bold text-gray-800">Muscle Activation</h5>
+                            <div className="space-y-6 mb-8">
+                              <div className="flex items-center gap-4 select-none">
+                                <Dumbbell className="h-6 w-6 text-gray-600" />
+                                <span className="text-lg text-gray-700 font-semibold">{exercise.equipment}</span>
+                              </div>
+                              <div className="flex gap-4 flex-wrap select-none">
+                                <Badge
+                                  variant="outline"
+                                  className="text-base bg-gray-100 text-gray-700 border-0 px-4 py-2 font-semibold select-none shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff] rounded-2xl"
+                                >
+                                  {exercise.sets} sets
+                                </Badge>
+                                <Badge
+                                  variant="outline"
+                                  className="text-base bg-yellow-100 text-yellow-700 border-0 px-4 py-2 font-semibold select-none shadow-[8px_8px_16px_#d4af37,-8px_-8px_16px_#ffeb3b] rounded-2xl"
+                                >
+                                  {exercise.reps} reps
+                                </Badge>
+                              </div>
+                              {exercise.notes && (
+                                <div className="bg-yellow-50 p-6 rounded-3xl shadow-[inset_20px_20px_60px_#e6d700,inset_-20px_-20px_60px_#ffff00] border-2 border-yellow-200 select-none">
+                                  <div className="flex items-start gap-4 select-none">
+                                    <Target className="h-6 w-6 text-yellow-600 mt-1 flex-shrink-0" />
+                                    <p className="text-lg font-bold text-gray-800 leading-relaxed">{exercise.notes}</p>
+                                  </div>
                                 </div>
-                                <div className="bg-gray-50 p-3 rounded-2xl shadow-[inset_8px_8px_16px_#bebebe,-20px_-20px_60px_#ffffff] select-none">
+                              )}
+                            </div>
+                            {exercise.muscleIllustration && (
+                              <div className="mt-8 pt-8 border-t-2 border-gray-200 select-none">
+                                <div className="flex items-center gap-3 mb-4 select-none">
+                                  <Target className="h-6 w-6 text-yellow-600" />
+                                  <h5 className="text-xl font-bold text-gray-800">Muscle Activation</h5>
+                                </div>
+                                <div className="bg-gray-50 p-6 rounded-3xl shadow-[inset_20px_20px_60px_#bebebe,-20px_-20px_60px_#ffffff] select-none">
                                   <img
                                     src={exercise.muscleIllustration || "/placeholder.svg"}
                                     alt={`${exercise.name} muscle activation`}
-                                    className="w-full rounded-xl shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff]"
+                                    className="w-full max-w-md mx-auto rounded-2xl shadow-[20px_20px_60px_#bebebe,-20px_-20px_60px_#ffffff]"
                                   />
                                 </div>
                               </div>
                             )}
                           </div>
                         </div>
-                      )
-                    })}
-                  </div>
+                      </div>
+                    )
+                  })}
                 </CardContent>
               </Card>
             </TabsContent>
@@ -958,7 +912,7 @@ function WorkoutScheduler() {
                                       <div className="flex gap-4 flex-wrap select-none">
                                         <Badge
                                           variant="outline"
-                                          className="text-base bg-gray-100 text-gray-700 border-0 px-4 py-2 font-semibold select-none shadow-[8px_8px_16px_#bebebe,-20px_-20px_60px_#ffffff] rounded-2xl"
+                                          className="text-base bg-gray-100 text-gray-700 border-0 px-4 py-2 font-semibold select-none shadow-[8px_8px_16px_#bebebe,-8px_-8px_16px_#ffffff] rounded-2xl"
                                         >
                                           {exercise.sets} sets
                                         </Badge>
