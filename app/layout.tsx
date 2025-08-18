@@ -4,9 +4,8 @@ import { GeistMono } from 'geist/font/mono'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.app',
+  title: 'Gym Workout Scheduler - Sirish Titaju',
+  description: 'A Gym Workout Scheduler by Sirish Titaju',
 }
 
 export default function RootLayout({
@@ -24,6 +23,7 @@ html {
   --font-mono: ${GeistMono.variable};
 }
         `}</style>
+        <link rel="icon" href="favicon.svg" type="image/svg+xml" />
       </head>
       <body>{children}</body>
     </html>

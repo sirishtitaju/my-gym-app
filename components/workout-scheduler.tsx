@@ -1090,7 +1090,7 @@ function WorkoutScheduler() {
             </CardContent>
           </Card>
 
-          <h4 class="font-bold text-gray-800 text-lg sm:text-2xl">Select your Day or Exercise</h4>
+          <h4 className="font-bold text-gray-800 text-lg sm:text-2xl">Select your Day or Exercise</h4>
           <Tabs value={activeDay} onValueChange={setActiveDay}>
             <div ref={tabsScrollRef} className="mb-10 bg-gray-100 p-4 rounded-3xl shadow-[20px_20px_60px_#bebebe,-20px_-20px_60px_#ffffff] border-0 select-none overflow-x-auto">
               <TabsList className="flex w-max min-w-full gap-3 bg-transparent p-0">
