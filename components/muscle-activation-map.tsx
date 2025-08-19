@@ -1,8 +1,8 @@
 "use client"
 
-import React, { useState } from 'react';
-import { Button } from "@/components/ui/button";
+import React from 'react';
 import { MuscleMap } from './muscle-map';
+import { frontMuscles, backMuscles } from '@/lib/muscle-groups';
 
 interface MuscleActivationMapProps {
   primaryMuscles: string[];
@@ -13,10 +13,20 @@ interface MuscleActivationMapProps {
 }
 
 const MuscleActivationMap: React.FC<MuscleActivationMapProps> = ({ primaryMuscles, secondaryMuscles, colors }) => {
-  const [view, setView] = useState<'front' | 'back'>('front');
+  const activeMuscles = [...primaryMuscles, ...secondaryMuscles];
+
+  const showFront = activeMuscles.some(muscle => frontMuscles.includes(muscle));
+  const showBack = activeMuscles.some(muscle => backMuscles.includes(muscle));
+
+  let viewMode: 'front' | 'back' | 'both' = 'front';
+  if (showFront && showBack) {
+    viewMode = 'both';
+  } else if (showBack) {
+    viewMode = 'back';
+  }
 
   const getColorHex = (baseColor: string, isPrimary: boolean) => {
-    const colorMap: { [key: string]: string } = {
+    const colorMap: { [key:string]: string } = {
       'blue': isPrimary ? '#3b82f6' : '#93c5fd',
       'indigo': isPrimary ? '#6366f1' : '#a5b4fc',
       'green': isPrimary ? '#22c55e' : '#86efac',
@@ -35,18 +45,26 @@ const MuscleActivationMap: React.FC<MuscleActivationMapProps> = ({ primaryMuscle
 
   return (
     <div className="relative">
-      <div className="absolute top-2 right-2 z-10">
-        <Button onClick={() => setView(view === 'front' ? 'back' : 'front')} size="sm" variant="outline" className="bg-white/80 backdrop-blur-sm">
-          {view === 'front' ? 'Show Back' : 'Show Front'}
-        </Button>
+      <div className={`grid ${viewMode === 'both' ? 'grid-cols-2 gap-4' : ''}`}>
+        {(viewMode === 'front' || viewMode === 'both') && (
+          <MuscleMap
+            view="front"
+            primaryMuscles={primaryMuscles}
+            secondaryMuscles={secondaryMuscles}
+            primaryColor={primaryColor}
+            secondaryColor={secondaryColor}
+          />
+        )}
+        {(viewMode === 'back' || viewMode === 'both') && (
+          <MuscleMap
+            view="back"
+            primaryMuscles={primaryMuscles}
+            secondaryMuscles={secondaryMuscles}
+            primaryColor={primaryColor}
+            secondaryColor={secondaryColor}
+          />
+        )}
       </div>
-      <MuscleMap
-        view={view}
-        primaryMuscles={primaryMuscles}
-        secondaryMuscles={secondaryMuscles}
-        primaryColor={primaryColor}
-        secondaryColor={secondaryColor}
-      />
     </div>
   );
 };
