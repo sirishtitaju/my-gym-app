@@ -630,6 +630,21 @@ function WorkoutScheduler() {
   const [isMuscleActivationOpen, setIsMuscleActivationOpen] = useState(false)
   const tabsScrollRef = useRef<HTMLDivElement>(null)
 
+  // Load from localStorage on component mount
+  useEffect(() => {
+    const savedDay = localStorage.getItem('workout-selected-day')
+    
+    if (savedDay) {
+      setActiveDay(savedDay)
+    }
+  }, [])
+
+  // Save to localStorage when activeDay changes
+  const handleDayChange = (day: string) => {
+    setActiveDay(day)
+    localStorage.setItem('workout-selected-day', day)
+  }
+
   const getMuscleGroupColors = (muscle: string) => {
     switch (muscle) {
       case "Chest":
@@ -766,7 +781,7 @@ function WorkoutScheduler() {
 
   const handleDayClick = (day: string) => {
     const workoutDay = mapDayToWorkout(day)
-    setActiveDay(workoutDay)
+    handleDayChange(workoutDay)
     // Small delay to ensure the tab state is updated before scrolling
     setTimeout(() => scrollToActiveTab(workoutDay), 100)
   }
@@ -1092,7 +1107,7 @@ function WorkoutScheduler() {
           </Card>
 
           <h4 className="font-bold text-gray-800 text-lg sm:text-2xl">Select your Day or Exercise</h4>
-          <Tabs value={activeDay} onValueChange={setActiveDay}>
+          <Tabs value={activeDay} onValueChange={handleDayChange}>
             <div ref={tabsScrollRef} className="mb-10 bg-gray-100 p-4 rounded-3xl shadow-[20px_20px_60px_#bebebe,-20px_-20px_60px_#ffffff] border-0 select-none overflow-x-auto">
               <TabsList className="flex w-max min-w-full gap-3 bg-transparent p-0">
                 <TabsTrigger
