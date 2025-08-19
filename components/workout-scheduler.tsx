@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { CheckCircle2, Clock, Dumbbell, Target, EyeOff, Zap, ChevronDown, ChevronUp } from "lucide-react"
 import { ParticlesBackground } from "./particles-background"
 import { LazyVideo } from "./lazy-video"
+import { MuscleActivationMap } from "./muscle-activation-map"
 
 interface Exercise {
   name: string
@@ -627,7 +628,7 @@ function WorkoutScheduler() {
   const [completedExercises, setCompletedExercises] = useState<Set<string>>(new Set())
   const [activeDay, setActiveDay] = useState("Warmup")
   const [hiddenVideos, setHiddenVideos] = useState<Set<string>>(new Set())
-  const [isMuscleActivationOpen, setIsMuscleActivationOpen] = useState(false)
+  const [openMuscleMap, setOpenMuscleMap] = useState<string | null>(null)
   const tabsScrollRef = useRef<HTMLDivElement>(null)
 
   // Load from localStorage on component mount
@@ -790,199 +791,6 @@ function WorkoutScheduler() {
     // Scroll to active tab when activeDay changes
     setTimeout(() => scrollToActiveTab(activeDay), 100)
   }, [activeDay])
-
-  const MuscleIllustration = ({ primaryMuscles, secondaryMuscles, colors }: {
-    primaryMuscles: string[],
-    secondaryMuscles: string[],
-    colors: any
-  }) => {
-    const getMusclePosition = (muscle: string) => {
-      const positions: { [key: string]: { x: number, y: number, width: number, height: number } } = {
-        // Upper body
-        "Pectorals": { x: 40, y: 30, width: 25, height: 12 },
-        "Upper Pectorals": { x: 40, y: 26, width: 25, height: 8 },
-        "Middle Pectorals": { x: 40, y: 30, width: 25, height: 8 },
-        "Lower Pectorals": { x: 40, y: 36, width: 25, height: 8 },
-        "Inner Pectorals": { x: 46, y: 30, width: 13, height: 12 },
-
-        // Shoulders
-        "Anterior Deltoids": { x: 28, y: 25, width: 10, height: 12 },
-        "Medial Deltoids": { x: 24, y: 22, width: 10, height: 10 },
-        "Posterior Deltoids": { x: 20, y: 25, width: 10, height: 12 },
-        "Deltoids": { x: 24, y: 22, width: 12, height: 12 },
-
-        // Arms
-        "Triceps": { x: 72, y: 30, width: 7, height: 16 },
-        "Triceps Long Head": { x: 72, y: 30, width: 7, height: 12 },
-        "Triceps Lateral Head": { x: 74, y: 34, width: 5, height: 8 },
-        "Biceps": { x: 15, y: 30, width: 7, height: 16 },
-        "Biceps Brachii": { x: 15, y: 30, width: 7, height: 16 },
-        "Biceps Long Head": { x: 13, y: 30, width: 5, height: 14 },
-        "Biceps Short Head": { x: 17, y: 32, width: 5, height: 12 },
-        "Brachialis": { x: 15, y: 42, width: 7, height: 8 },
-        "Brachioradialis": { x: 17, y: 46, width: 5, height: 12 },
-
-        // Back
-        "Latissimus Dorsi": { x: 30, y: 35, width: 18, height: 20 },
-        "Lower Latissimus Dorsi": { x: 30, y: 42, width: 18, height: 13 },
-        "Rhomboids": { x: 42, y: 28, width: 12, height: 10 },
-        "Middle Trapezius": { x: 38, y: 20, width: 20, height: 12 },
-        "Upper Trapezius": { x: 42, y: 16, width: 12, height: 8 },
-        "Teres Major": { x: 26, y: 32, width: 8, height: 6 },
-        "Rear Deltoids": { x: 20, y: 25, width: 10, height: 12 },
-        "Erector Spinae": { x: 48, y: 40, width: 4, height: 25 },
-
-        // Core
-        "Rectus Abdominis": { x: 44, y: 50, width: 16, height: 20 },
-        "Lower Rectus Abdominis": { x: 44, y: 62, width: 16, height: 8 },
-        "Obliques": { x: 32, y: 54, width: 10, height: 16 },
-        "Transverse Abdominis": { x: 40, y: 50, width: 24, height: 20 },
-        "Serratus Anterior": { x: 30, y: 40, width: 6, height: 12 },
-
-        // Legs
-        "Quadriceps": { x: 40, y: 75, width: 12, height: 16 },
-        "Hamstrings": { x: 44, y: 80, width: 10, height: 14 },
-        "Glutes": { x: 40, y: 70, width: 16, height: 10 },
-        "Calves": { x: 42, y: 96, width: 8, height: 12 },
-        "Soleus": { x: 42, y: 100, width: 8, height: 8 },
-        "Hip Flexors": { x: 44, y: 67, width: 10, height: 6 },
-
-        // Full body
-        "Full Body": { x: 25, y: 20, width: 50, height: 70 },
-        "Core": { x: 40, y: 50, width: 24, height: 20 }
-      }
-      return positions[muscle] || { x: 48, y: 55, width: 8, height: 8 }
-    }
-
-    const isPrimary = (muscle: string) => primaryMuscles.includes(muscle)
-    const isSecondary = (muscle: string) => secondaryMuscles.includes(muscle)
-    const allMuscles = [...primaryMuscles, ...secondaryMuscles]
-
-    const getColorHex = (baseColor: string, isPrimary: boolean) => {
-      const colorMap = {
-        'blue': isPrimary ? '#1d4ed8' : '#93c5fd',
-        'indigo': isPrimary ? '#3730a3' : '#a5b4fc',
-        'green': isPrimary ? '#047857' : '#6ee7b7',
-        'emerald': isPrimary ? '#065f46' : '#6ee7b7',
-        'orange': isPrimary ? '#c2410c' : '#fdba74',
-        'purple': isPrimary ? '#6b21a8' : '#c4b5fd',
-        'red': isPrimary ? '#b91c1c' : '#fca5a5',
-        'yellow': isPrimary ? '#b45309' : '#fcd34d'
-      }
-      return colorMap[baseColor as keyof typeof colorMap] || (isPrimary ? '#b45309' : '#fcd34d')
-    }
-
-    return (
-      <div className="flex justify-center mb-4">
-        <svg width="240" height="300" viewBox="0 0 110 140" className="border-2 border-gray-300 rounded-xl bg-gradient-to-b from-gray-50 to-gray-100 shadow-lg">
-          {/* Enhanced muscular body outline */}
-
-          {/* Head */}
-          <circle cx="55" cy="12" r="8" fill="#f8fafc" stroke="#64748b" strokeWidth="2" />
-          <circle cx="52" cy="10" r="1.5" fill="#374151" />
-          <circle cx="58" cy="10" r="1.5" fill="#374151" />
-          <path d="M52 14 Q55 16 58 14" fill="none" stroke="#374151" strokeWidth="1.5" />
-
-          {/* Neck */}
-          <rect x="50" y="20" width="10" height="8" rx="3" fill="#f8fafc" stroke="#64748b" strokeWidth="1.5" />
-
-          {/* Torso - muscular definition */}
-          <path
-            d="M38 28 Q42 26 46 28 L50 30 L60 30 L64 28 Q68 26 72 28 
-               L76 36 Q78 42 76 48 L74 58 Q73 68 71 74 
-               L68 82 Q63 86 58 86 L52 86 Q47 86 42 82 
-               L39 74 Q37 68 39 58 L41 48 Q39 42 41 36 Z"
-            fill="#f8fafc"
-            stroke="#64748b"
-            strokeWidth="2"
-          />
-
-          {/* Chest definition */}
-          <path d="M46 34 Q55 37 64 34" fill="none" stroke="#94a3b8" strokeWidth="1.5" opacity="0.8" />
-          <path d="M44 40 Q55 43 66 40" fill="none" stroke="#94a3b8" strokeWidth="1.5" opacity="0.8" />
-
-          {/* Abs definition */}
-          <line x1="55" y1="52" x2="55" y2="78" stroke="#94a3b8" strokeWidth="1.5" opacity="0.8" />
-          <line x1="48" y1="57" x2="62" y2="57" stroke="#94a3b8" strokeWidth="1" opacity="0.6" />
-          <line x1="48" y1="64" x2="62" y2="64" stroke="#94a3b8" strokeWidth="1" opacity="0.6" />
-          <line x1="48" y1="71" x2="62" y2="71" stroke="#94a3b8" strokeWidth="1" opacity="0.6" />
-
-          {/* Arms - more muscular */}
-          <ellipse cx="28" cy="36" rx="9" ry="14" fill="#f8fafc" stroke="#64748b" strokeWidth="2" />
-          <ellipse cx="20" cy="52" rx="7" ry="12" fill="#f8fafc" stroke="#64748b" strokeWidth="2" />
-          <path d="M25 44 Q23 47 25 50" fill="none" stroke="#94a3b8" strokeWidth="1.5" opacity="0.7" />
-
-          <ellipse cx="82" cy="36" rx="9" ry="14" fill="#f8fafc" stroke="#64748b" strokeWidth="2" />
-          <ellipse cx="90" cy="52" rx="7" ry="12" fill="#f8fafc" stroke="#64748b" strokeWidth="2" />
-          <path d="M85 44 Q87 47 85 50" fill="none" stroke="#94a3b8" strokeWidth="1.5" opacity="0.7" />
-
-          {/* Legs - defined */}
-          <ellipse cx="46" cy="98" rx="11" ry="20" fill="#f8fafc" stroke="#64748b" strokeWidth="2" />
-          <ellipse cx="43" cy="124" rx="8" ry="14" fill="#f8fafc" stroke="#64748b" strokeWidth="2" />
-          <path d="M41 88 Q43 96 41 104" fill="none" stroke="#94a3b8" strokeWidth="1.5" opacity="0.7" />
-          <path d="M51 88 Q49 96 51 104" fill="none" stroke="#94a3b8" strokeWidth="1.5" opacity="0.7" />
-
-          <ellipse cx="64" cy="98" rx="11" ry="20" fill="#f8fafc" stroke="#64748b" strokeWidth="2" />
-          <ellipse cx="67" cy="124" rx="8" ry="14" fill="#f8fafc" stroke="#64748b" strokeWidth="2" />
-          <path d="M59 88 Q61 96 59 104" fill="none" stroke="#94a3b8" strokeWidth="1.5" opacity="0.7" />
-          <path d="M69 88 Q67 96 69 104" fill="none" stroke="#94a3b8" strokeWidth="1.5" opacity="0.7" />
-
-          {/* Muscle groups with enhanced visibility */}
-          {allMuscles.map((muscle, idx) => {
-            const pos = getMusclePosition(muscle)
-            const primary = isPrimary(muscle)
-            const baseColor = colors.icon.replace('text-', '').replace('-500', '')
-
-            return (
-              <ellipse
-                key={idx}
-                cx={pos.x + pos.width / 2}
-                cy={pos.y + pos.height / 2}
-                rx={pos.width / 2}
-                ry={pos.height / 2}
-                fill={getColorHex(baseColor, primary)}
-                opacity={primary ? "0.95" : "0.65"}
-                stroke={primary ? "#ffffff" : "rgba(255,255,255,0.7)"}
-                strokeWidth={primary ? "2" : "1"}
-                filter={primary ? "drop-shadow(0 3px 6px rgba(0,0,0,0.3))" : "drop-shadow(0 1px 3px rgba(0,0,0,0.2))"}
-              />
-            )
-          })}
-
-          {/* Enhanced labels for primary muscles */}
-          {allMuscles.filter(muscle => isPrimary(muscle)).slice(0, 2).map((muscle, idx) => {
-            const pos = getMusclePosition(muscle)
-            const shortName = muscle.split(' ')[0]
-            return (
-              <g key={`label-${idx}`}>
-                <rect
-                  x={pos.x + pos.width / 2 - shortName.length * 2.5}
-                  y={pos.y + pos.height / 2 - 4}
-                  width={shortName.length * 5}
-                  height="8"
-                  rx="4"
-                  fill="rgba(0,0,0,0.85)"
-                  stroke="rgba(255,255,255,0.3)"
-                  strokeWidth="0.5"
-                />
-                <text
-                  x={pos.x + pos.width / 2}
-                  y={pos.y + pos.height / 2 + 1.5}
-                  textAnchor="middle"
-                  fontSize="5"
-                  fill="white"
-                  fontWeight="bold"
-                  className="select-none"
-                >
-                  {shortName}
-                </text>
-              </g>
-            )
-          })}
-        </svg>
-      </div>
-    )
-  }
 
   const getMuscleActivation = (exerciseName: string, targetMuscle: string) => {
     const activationMap: { [key: string]: { primary: string[], secondary: string[] } } = {
@@ -1233,30 +1041,30 @@ function WorkoutScheduler() {
                             <div className="mt-6 pt-6 border-t-2 border-gray-200 select-none">
                               <Button
                                 variant="ghost"
-                                onClick={() => setIsMuscleActivationOpen(!isMuscleActivationOpen)}
+                                onClick={() => setOpenMuscleMap(openMuscleMap === exerciseKey ? null : exerciseKey)}
                                 className="w-full justify-between p-0 h-auto hover:bg-transparent"
                               >
                                 <div className="flex items-center gap-3 mb-4 select-none">
                                   <Target className="h-6 w-6 text-orange-600" />
                                   <h5 className="text-lg sm:text-xl font-bold text-gray-800">Muscle Activation</h5>
                                 </div>
-                                {isMuscleActivationOpen ? (
+                                {openMuscleMap === exerciseKey ? (
                                   <ChevronUp className="h-5 w-5 text-gray-600" />
                                 ) : (
                                   <ChevronDown className="h-5 w-5 text-gray-600" />
                                 )}
                               </Button>
 
-                              {isMuscleActivationOpen && (
+                              {openMuscleMap === exerciseKey && (
                                 (() => {
                                   const activation = getMuscleActivation(exercise.name, exercise.targetMuscle)
                                   return (
                                     <div className="bg-gradient-to-br from-orange-50 to-red-50 p-4 sm:p-6 rounded-2xl shadow-[inset_12px_12px_24px_rgba(251,146,60,0.1),inset_-12px_-12px_24px_rgba(255,255,255,0.8)] border border-orange-100">
                                       <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
                                         <div>
-                                          <MuscleIllustration
-                                            primaryMuscles={activation.primary}
-                                            secondaryMuscles={activation.secondary}
+                                          <MuscleActivationMap
+                                            primaryMuscles={activation.primary.map(m => m.toLowerCase().replace(/ /g, '-'))}
+                                            secondaryMuscles={activation.secondary.map(m => m.toLowerCase().replace(/ /g, '-'))}
                                             colors={{ icon: "text-orange-500" }}
                                           />
                                         </div>
@@ -1404,21 +1212,24 @@ function WorkoutScheduler() {
                                       <div className="mt-6 pt-6 border-t-2 border-gray-200 select-none">
                                         <Button
                                           variant="ghost"
-                                          onClick={() => setIsMuscleActivationOpen(!isMuscleActivationOpen)}
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            setOpenMuscleMap(openMuscleMap === exerciseKey ? null : exerciseKey)
+                                          }}
                                           className="w-full justify-between p-0 h-auto hover:bg-transparent"
                                         >
                                           <div className="flex items-center gap-3 mb-4 select-none">
                                             <Target className={`h-6 w-6 ${colors.icon.replace('-500', '-600')}`} />
                                             <h5 className="text-lg sm:text-xl font-bold text-gray-800">Muscle Activation</h5>
                                           </div>
-                                          {isMuscleActivationOpen ? (
+                                          {openMuscleMap === exerciseKey ? (
                                             <ChevronUp className="h-5 w-5 text-gray-600" />
                                           ) : (
                                             <ChevronDown className="h-5 w-5 text-gray-600" />
                                           )}
                                         </Button>
 
-                                        {isMuscleActivationOpen && (
+                                        {openMuscleMap === exerciseKey && (
                                           (() => {
                                             const activation = getMuscleActivation(exercise.name, exercise.targetMuscle)
                                             const primaryColor = colors.icon.replace('text-', '').replace('-500', '')
@@ -1426,9 +1237,9 @@ function WorkoutScheduler() {
                                               <div className="bg-white/50 backdrop-blur-sm p-4 sm:p-6 rounded-2xl shadow-[inset_8px_8px_16px_rgba(0,0,0,0.05),inset_-8px_-8px_16px_rgba(255,255,255,0.8)] border border-gray-200">
                                                 <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
                                                   <div>
-                                                    <MuscleIllustration
-                                                      primaryMuscles={activation.primary}
-                                                      secondaryMuscles={activation.secondary}
+                                                    <MuscleActivationMap
+                                                      primaryMuscles={activation.primary.map(m => m.toLowerCase().replace(/ /g, '-'))}
+                                                      secondaryMuscles={activation.secondary.map(m => m.toLowerCase().replace(/ /g, '-'))}
                                                       colors={colors}
                                                     />
                                                   </div>
